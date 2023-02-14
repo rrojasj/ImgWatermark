@@ -1,3 +1,5 @@
+# Allows to interact with the native OS Python is currently running on.
+# It provides an easy way for the user to interact with several os functions
 import os
 
 # ============================================ #
