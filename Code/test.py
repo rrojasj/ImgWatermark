@@ -22,3 +22,19 @@
 
 # *********************   *********************   ********************* #
 # *********************   *********************   ********************* #
+# w, h = 205, 213
+# x, y = int(w/2), int(h/2)
+
+# # Usar las variables y determinar cuál de los dos valores utilizar - altura o largo
+# if x > y:
+#     wm_size = y
+# elif y > x:
+#     wm_size = x
+# else:
+#     wm_size = x
+
+# size_data = [x, y, wm_size]
+
+# print(size_data[0])
+
+# -----  -----  -----  -----  -----  -----  -----  -----  -----  #
