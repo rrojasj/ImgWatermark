@@ -3,9 +3,7 @@
 import os
 
 # importing Pillow library
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -28,60 +26,38 @@ def read_files(p_file_path):
     print('\n')
 
 """
-:function: set_wm_size()
-:description: Darle el tamaño a la marca de agua
-:params: p_image
-"""
-def set_wm_size(p_image):
-    # Darle el valor a las variables para determinar el tamaño de la marca de agua
-    w, h = p_image.size
-    x, y = int(w/2), int(h/2)
-
-    # Usar las variables y determinar cuál de los dos valores utilizar - altura o largo
-    if x > y:
-        wm_size = y
-    elif y > x:
-        wm_size = x
-    else:
-        wm_size = x
-
-    return x, y, wm_size
-
-"""
 :function: wm_text()
 :description: Agrega una marca de agua a la imagen indicada por el usuario
 :params: p_image
 """
-def wm_text(p_image):
+def wm_text(p_file_path, p_img_name):
 
-    # Abrir imágen - Es necesario para poder editar
-    image = Image.open(p_image)
+    # Crear un objeto imagen desde la imagen original
+    # Se almacena en la variable 'image'
+    full_path = p_file_path+p_img_name
+    image = Image.open(full_path)
+    width, height = image.size
 
-    # Abrir la imágen en photo viewer
+    # Texto a pintar en el objeto imagen que se creó
+    draw = ImageDraw.Draw(image)
+    text = "ImgWatermark"
+
+    font = ImageFont.truetype('arial.ttf', 24)
+    text_width, text_height = draw.textsize(text, font)
+
+    # calculate the x,y coordinates of the text
+    margin = 10
+    x = (width/text_width)+10 # width - text_width - margin
+    y = height/text_height # height - text_height - margin
+
+    # Pintar la marca de agua en la esquina superior izquierda 
+    new_watermark = draw.text((x,y), text, font=font)
     image.show()
-    plt.imshow(image)
 
-    # Hacer una copia de la imagen original
-    watermark_image = image.copy()
-
-    # Hacer la imagen editable por utilizar ImageDraw
-    draw = ImageDraw.Draw(watermark_image)
-
-    # Obtener el tamaño de la marca de agua
-    wm_size = set_wm_size(watermark_image)
-
-    # Tipo de fuente y atributos
-    font = ImageFont.truetype("arial.ttf", int(wm_size[2]/6))
-    
-    # Agregar la marca de agua!
-    print("TESTING")
-    print(wm_size[0])
-    print(wm_size[1])
-    print("\n")
-    draw.text((wm_size[0], wm_size[1]), "ImgWatermark", fill=(192, 192, 192), font=font, anchor='ms') 
-    #subplot(nrows, ncols, index, **kwargs)
-    # plt.subplots(1, 2, 1)
-    plt.imshow(watermark_image)
+    # Salvar la imagen en el folder predeterminado
+    image.save('C:/ImgWatermark/Saved/'+ p_img_name.replace('.png','') +'_img_wm.png')
+    print("\nImagen guardada en la ruta destinada: \"C:/ImgWatermark/Saved/\"")
+    print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 """
 :function: wm_image()
@@ -96,21 +72,22 @@ def wm_image(p_image):
 :description: Agrega una marca de agua a la imagen indicada por el usuario
 :params: p_file_name
 """
-def add_wm_image(p_file_name): # recibe parámetros
-    file_path = "C:/ImgWatermark/Documents/"
+def add_watermark(p_file_name, p_file_path): # recibe parámetros
+    file_path = p_file_path
     img_name = p_file_name
 
     for image in os.listdir(file_path):
         if image == img_name:
-            wm_type = int(input("Seleccione el tipo de marca de agua:\n1. Texto\n2. Imágen\n"))
+            wm_type = int(input("Seleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
             if wm_type == 1:
-                wm_text(file_path+image)
+                wm_text(file_path, img_name)
+                break
             else:
-                wm_image(file_path+image)
-
-
-    print("\n La imagen no se encuentra en el directorio.")
-    time.sleep(4)
+                wm_image(file_path, img_name)
+                break
+    else:
+        print("\n La imagen no se encuentra en el directorio.")
+        time.sleep(4)
 
 # ============================================ #
 #                INICIO: MENU                
@@ -134,7 +111,12 @@ while option_menu != 0:
     elif option_menu == 2:
         # Agregar marca de agua a un archivo
         img_name = input("\n2. Ingrese el nombre de la imagen para la marca de agua: \n")
-        add_wm_image(img_name) # Envía argumentos
+        file_path = input("\n2. Ingrese la ruta del directorio de la imagen: \n")
+        time.sleep(3)
+        if os.path.exists(file_path):
+            add_watermark(img_name, file_path) # Envía argumentos
+        else:
+            print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
     else:
         print("Opción inválida.\n")
@@ -143,7 +125,7 @@ while option_menu != 0:
     option_menu = int(input("Seleccione una opción: \n"))
 
 
-print("Gracias por utilizar ImageWatermark Tool.\n")
+print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 
 # ============================================ #

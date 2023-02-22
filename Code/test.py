@@ -38,3 +38,31 @@
 # print(size_data[0])
 
 # -----  -----  -----  -----  -----  -----  -----  -----  -----  #
+
+# https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
+
+#Import required Image library
+from PIL import Image, ImageDraw, ImageFont
+
+#Create an Image Object from an Image
+im = Image.open('C:/ImgWatermark/Documents/video_game_3.png')
+width, height = im.size
+
+draw = ImageDraw.Draw(im)
+text = "ImgWatermark"
+
+font = ImageFont.truetype('arial.ttf', 36)
+textwidth, textheight = draw.textsize(text, font)
+
+# calculate the x,y coordinates of the text
+margin = 10
+x = width - textwidth - margin
+y = height - textheight - margin
+
+# draw watermark in the bottom right corner
+new_var = draw.text((x, y), text, font=font)
+new_var
+im.show()
+
+#Save watermarked image
+im.save('C:/ImgWatermark/Documents/video_game_3_wm.png')
