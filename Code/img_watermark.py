@@ -60,12 +60,40 @@ def wm_text(p_file_path, p_img_name):
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 """
+:function: trans_paste()
+:description: Agrega una imagen con transparencia como marca de agua
+:params: bg
+"""
+def trans_paste(p_source_img,alpha=1.0,box=(0,0)):
+
+    wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_trasparent.png")
+
+    # Agrega transparencia a la imagen marca de agua
+    wm_img_trans = Image.new("RGBA",wm_img.size)
+    wm_img_trans = Image.blend(wm_img_trans,wm_img,alpha)
+
+    # Se une la imagen marca de agua con la imagen origen
+    p_source_img.paste(wm_img_trans,box,wm_img_trans)
+
+    return p_source_img
+
+"""
 :function: wm_image()
 :description: Agrega una marca de agua a la imagen indicada por el usuario
 :params: p_file_name
 """
-def wm_image(p_image):
-    print("")
+def wm_image(p_file_path, p_img_name):
+
+    source_img = Image.open(p_file_path+p_img_name)
+    wm_image = trans_paste(source_img,.7,(15,15))
+
+    # No es requerido mostrar la imagen - Deshabilitar
+    wm_image.show()
+
+    # Salvar la imagen en el folder predeterminado
+    wm_image.save('C:/ImgWatermark/Saved/'+ p_img_name.replace('.png','') +'_img_wm.png')
+    print("\nImagen guardada en la ruta destinada: \"C:/ImgWatermark/Saved/\"")
+    print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 """
 :function: add_wm_image()
@@ -131,3 +159,4 @@ print("\nGracias por utilizar ImageWatermark Tool.\n")
 # ============================================ #
 #                FIN: MENU                
 # ============================================ #
+
