@@ -188,18 +188,18 @@
 # -----  -----  -----  -----  -----  -----  -----  -----  -----  #
 # WINNER!!!
 
-from PIL import Image
+# from PIL import Image
 
-def trans_paste(bg_img,alpha=1.0,box=(0,0)):
-    fg_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_trasparent.png")
-    fg_img_trans = Image.new("RGBA",fg_img.size)
-    fg_img_trans = Image.blend(fg_img_trans,fg_img,alpha)
-    bg_img.paste(fg_img_trans,box,fg_img_trans)
-    return bg_img
+# def trans_paste(bg_img,alpha=1.0,box=(0,0)):
+#     fg_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_trasparent.png")
+#     fg_img_trans = Image.new("RGBA",fg_img.size)
+#     fg_img_trans = Image.blend(fg_img_trans,fg_img,alpha)
+#     bg_img.paste(fg_img_trans,box,fg_img_trans)
+#     return bg_img
 
-bg_img = Image.open(r"C:\ImgWatermark\Documents\hacking_1.png")
-wm_image = trans_paste(bg_img,.7,(15,15))
-wm_image.show()
+# bg_img = Image.open(r"C:\ImgWatermark\Documents\hacking_1.png")
+# wm_image = trans_paste(bg_img,.7,(15,15))
+# wm_image.show()
 
 
 # -----  -----  -----  -----  -----  -----  -----  -----  -----  #
