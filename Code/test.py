@@ -208,3 +208,21 @@
 # USEFUL LINKS
 # - https://holypython.com/how-to-watermark-images-w-python-pil/
 # - 
+
+# -----  -----  -----  -----  -----  -----  -----  -----  -----  #
+#funcion con trycatch de bucle While
+
+"""
+def read_files(p_file_path):
+    is_valid_dir = os.path.isdir(p_file_path)
+    
+    while not is_valid_dir: #si is_valid_dir = false, va a seguir imprimiendo este mensaje hasta que se introduzca de un directorio falso
+        print("La ruta del directorio no es válida.")
+        p_file_path = input("Introduzca una ruta de directorio válida: ")
+        is_valid_dir = os.path.isdir(p_file_path)
+    #falta aagregar algo para que, en caso de primero introducir un directorio invalido, vuelva a imprimir "\nLos archivos encontrados en la ruta indicada son: " para la segunda vez.
+    for image in os.listdir(p_file_path):
+        if os.path.isfile(os.path.join(p_file_path, image)) and image.endswith('.png'):
+            print('- '+image)
+    print('\n')
+"""
