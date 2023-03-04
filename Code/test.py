@@ -71,7 +71,7 @@
 
 # https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
 
-# WORKING!!!!
+# WORKING - WITHOUT TRANSPARENCY!!!!
 
 # # Importing Image module from PIL package
 # from PIL import Image
@@ -201,10 +201,19 @@
 # wm_image = trans_paste(bg_img,.7,(15,15))
 # wm_image.show()
 
+# resource: https://stackoverflow.com/questions/5324647/how-to-merge-a-transparent-png-image-with-another-image-using-pil
 
 # -----  -----  -----  -----  -----  -----  -----  -----  -----  #
 
 
 # USEFUL LINKS
 # - https://holypython.com/how-to-watermark-images-w-python-pil/
-# - 
+# - https://stackoverflow.com/questions/5324647/how-to-merge-a-transparent-png-image-with-another-image-using-pil
+
+# import datetime
+
+
+# fecha_actual = datetime.datetime.now()
+# print(fecha_actual)
+
+# -----  -----  -----  -----  -----  -----  -----  -----  -----  #
