@@ -66,7 +66,7 @@ def wm_text(p_file_path, p_img_name):
 """
 def trans_paste(p_source_img,alpha=1.0,box=(0,0)):
 
-    wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_trasparent.png")
+    wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
 
     # Agrega transparencia a la imagen marca de agua
     wm_img_trans = Image.new("RGBA",wm_img.size)
@@ -134,7 +134,12 @@ while option_menu != 0:
     if option_menu == 1:
         # Obtener la lista de archivos del directorio
         file_path = input("\n1. Ingrese la ruta del directorio de las imágenes: \n")
-        read_files(file_path)
+
+        if os.path.exists(file_path):
+            read_files(file_path)
+        else:
+            print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
+
        
     elif option_menu == 2:
         # Agregar marca de agua a un archivo
