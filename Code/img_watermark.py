@@ -15,7 +15,7 @@ import time
 :params: p_file_path
 """
 def read_files(p_file_path):
-    ## Windows: C:/ImgWatermark/Documents
+    ## Windows: C:/ImgWatermark/Documents/
     ## Mac: /Users/robjimn/Documents/Roberto Rojas/Cenfotec
     print("\nLos archivos encontrados en la ruta indicada son: ")
 
@@ -47,7 +47,7 @@ def wm_text(p_file_path, p_img_name):
 
     # calculate the x,y coordinates of the text
     margin = 10
-    x = (width/text_width)+10 # width - text_width - margin
+    x = (width/text_width)+margin # width - text_width - margin
     y = height/text_height # height - text_height - margin
 
     # Pintar la marca de agua en la esquina superior izquierda 
