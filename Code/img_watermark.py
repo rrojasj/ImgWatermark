@@ -1,6 +1,7 @@
 # Allows to interact with the native OS Python is currently running on.
 # It provides an easy way for the user to interact with several os functions
 import os
+import tkinter
 
 # importing Pillow library
 from PIL import Image, ImageDraw, ImageFont
@@ -11,7 +12,7 @@ import time
 from img_wm_functions import *
 
 # ============================================ #
-#                INICIO: MENU                1
+#                INICIO: MENU
 # ============================================ #
 
 main_menu()
@@ -23,7 +24,10 @@ while option_menu != 0:
         file_path = input("\n1. Ingrese la ruta del directorio de las imágenes: \n")
 
         if os.path.exists(file_path):
-            print("\nCargando archivos...")
+            #alert_title = "Lista de imágenes"
+            alert_message = "Cargando imágenes..."
+            show_alert(alert_message) # No está mostrando el pop-up
+            print("\nCargando imágenes...")
             time.sleep(3)
             read_files(file_path)
         else:

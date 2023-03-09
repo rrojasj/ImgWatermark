@@ -1,11 +1,36 @@
 import os
-import time
 
 # importing Pillow library
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
+# importing TKinter library
+
+
+"""
+:function: select_wm_img()
+:description: Muestra las imágenes con marca de agua guardados y solicita ingresar el nombre de la imagen que se necesita actualizar la marca de agua 
+:params: N/A
+"""
+def show_alert(message):
+    from tkinter import Tk, Label
+
+    #Create an instance of tkinter frame
+    win = Tk()
+
+    #Set the geometry of tkinter frame
+    win.geometry("750x270")
+
+    #Initialize a Label widget
+    Label(win, text= message,
+    font=('Helvetica 20 bold')).pack(pady=20)
+
+    #Automatically close the window after 3 seconds
+    win.after(3000,lambda:win.destroy())
+
+    win.mainloop()
 
 def main_menu():
     print("\n************** MENÚ DE OPCIONES **************")
@@ -126,7 +151,7 @@ def add_watermark(p_file_name, p_file_path): # recibe parámetros
 
     for image in os.listdir(file_path):
         if image == img_name:
-            wm_type = int(input("Seleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
+            wm_type = int(input("\nSeleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
             if wm_type == 1:
                 wm_text(file_path, img_name)
                 break
@@ -167,3 +192,4 @@ def select_wm_img():
         print("Archivo existe... Invocar función para actualizar")
     else:
         print("La imagen no existe, por favor trate nuevamente")
+
