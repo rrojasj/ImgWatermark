@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+# importing functions from img_wn_functions.py
+from img_wm_functions import *
 
 """
 :function: read_files()
@@ -121,13 +123,8 @@ def add_watermark(p_file_name, p_file_path): # recibe parámetros
 #                INICIO: MENU                
 # ============================================ #
 
-def menu():
-    print("\n************** MENÚ DE OPCIONES **************")
-    print("[1] Obtener la lista de archivos del directorio")
-    print("[2] Agregar marca de agua a un archivo")
-    print("[0] Salir del programa \n")
+main_menu()
 
-menu()
 option_menu = int(input("Seleccione una opción: \n"))
 
 while option_menu != 0:
@@ -151,6 +148,13 @@ while option_menu != 0:
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
+    elif option_menu == 3:
+        while show_wm_options != 0:
+            file_to_update = select_wm_img()
+
+            config_selection = show_wm_options()
+            if config_selection == 1:
+                select_wm_img()
     else:
         print("Opción inválida.\n")
 
