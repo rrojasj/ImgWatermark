@@ -54,13 +54,19 @@ def show_wm_options():
     config_selection = int(input("Seleccione una opción de configuración: \n"))
     return config_selection
 
+def verify_dir(p_file_path):
+    if os.path.exists(p_file_path):
+        return True # Envía argumentos
+    else:
+        return False
+
 """
 :function: read_files()
 :description: Lee e imprime el nombre de los archivos en un directorio específico
 :params: p_file_path
 """
 def read_files(p_file_path):
-    ## Windows: C:/ImgWatermark/Documents
+    ## Windows: C:/ImgWatermark/Documents/
     ## Mac: /Users/robjimn/Documents/Roberto Rojas/Cenfotec
     print("\nLos archivos encontrados en la ruta indicada son: ")
 
@@ -70,13 +76,13 @@ def read_files(p_file_path):
             print('- '+image)
     print('\n')
 
-"""
-:function: wm_text()
-:description: Agrega una marca de agua a la imagen indicada por el usuario
-:params: p_image
-"""
-def wm_text(p_file_path, p_img_name):
 
+def wm_text(p_file_path, p_img_name):
+    """
+    :function: wm_text()
+    :description: Agrega una marca de agua a la imagen indicada por el usuario
+    :params: p_image
+    """
     # Crear un objeto imagen desde la imagen original
     # Se almacena en la variable 'image'
     full_path = p_file_path+p_img_name
@@ -86,13 +92,22 @@ def wm_text(p_file_path, p_img_name):
     # Texto a pintar en el objeto imagen que se creó
     draw = ImageDraw.Draw(image)
     text = "ImgWatermark"
+    
+    # Salvar la imagen en el folder que el usuario seleccione
+    # C:/ImgWatermark/Saved/
+    save_location = input("Seleccione la ubicación donde desea guardar la marca de agua: \n")
+    save_true = ""
+    if verify_dir(save_location):
+        save_true = save_location 
+    else:
+        print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
     font = ImageFont.truetype('arial.ttf', 24)
     text_width, text_height = draw.textsize(text, font)
 
     # calculate the x,y coordinates of the text
     margin = 10
-    x = (width/text_width)+10 # width - text_width - margin
+    x = (width/text_width)+margin # width - text_width - margin
     y = height/text_height # height - text_height - margin
 
     # Pintar la marca de agua en la esquina superior izquierda 
@@ -100,8 +115,8 @@ def wm_text(p_file_path, p_img_name):
     image.show()
 
     # Salvar la imagen en el folder predeterminado
-    image.save('C:/ImgWatermark/Saved/'+ p_img_name.replace('.png','') +'_text_wm.png')
-    print("\nImagen guardada en la ruta destinada: \"C:/ImgWatermark/Saved/\"")
+    image.save(save_true+ p_img_name.replace('.png','') +'_text_wm.png')
+    print("\nImagen guardada en la ruta destinada: " + save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 """
@@ -123,21 +138,47 @@ def trans_paste(p_source_img,alpha=1.0,box=(0,0)):
     return p_source_img
 
 """
+:function: update_wm_opacity()
+:description: Agrega una imagen con transparencia como marca de agua desde un inicio
+:params: bg
+"""
+def update_wm_opacity(p_source_img,alpha=1.0,box=(0,0)):
+
+    wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
+
+    # Agrega transparencia a la imagen marca de agua
+    wm_img_trans = Image.new("RGBA",wm_img.size)
+    wm_img_trans = Image.blend(wm_img_trans,wm_img,alpha)
+
+    # Se une la imagen marca de agua con la imagen origen
+    p_source_img.paste(wm_img_trans,box,wm_img_trans)
+
+    return p_source_img
+
+"""
 :function: wm_image()
 :description: Agrega una marca de agua a la imagen indicada por el usuario
 :params: p_file_name
 """
 def wm_image(p_file_path, p_img_name):
 
+    # Salvar la imagen en el folder que el usuario seleccione
+    # C:/ImgWatermark/Saved/
+    save_location = input("Seleccione la ubicación donde desea guardar la marca de agua: \n")
+    save_true = ""
+    if verify_dir(save_location):
+        save_true = save_location 
+    else:
+        print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
+
     source_img = Image.open(p_file_path+p_img_name)
     wm_image = trans_paste(source_img,.7,(15,15))
 
     # No es requerido mostrar la imagen - Deshabilitar
-    wm_image.show()
-
-    # Salvar la imagen en el folder predeterminado
-    wm_image.save('C:/ImgWatermark/Saved/'+ p_img_name.replace('.png','') +'_image_wm.png')
-    print("\nImagen guardada en la ruta destinada: \"C:/ImgWatermark/Saved/\"")
+    # wm_image.show()
+    print(save_true)
+    wm_image.save(save_true+ p_img_name.replace('.png','') +'_text_wm.png')
+    print("\nImagen guardada en la ruta destinada:" +save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 """
@@ -173,6 +214,75 @@ def validate_file(p_saved_dir, p_file_to_update):
     isExisting = os.path.exists(full_path)
     return isExisting
 
+# -------------------------------------------------------------
+# -------------------------------------------------------------
+
+"""
+:function: update_wm_text_transp()
+:description: Ejecuta la función para actualizar la transparencia de la marca de agua
+:params: 
+"""
+def update_wm_text_transp():
+    return print("")
+
+"""
+:function: update_wm_img_transp()
+:description: Ejecuta la función para actualizar la transparencia de la marca de agua
+:params: 
+"""
+def update_wm_img_transp():
+    return print("")
+
+"""
+:function: update_wm_dimension()
+:description: Ejecuta la función para redimensionar el tamaño de la marca de agua
+:params: 
+"""
+def update_wm_dimemsion():
+    return print("")
+
+"""
+:function: update_wm_location()
+:description: Ejecuta la función para actualizar la ubicación de la marca de agua en la imagen
+:params: 
+"""
+def update_wm_location():
+    return print("")
+
+"""
+:function: execute_config_opt()
+:description: Ejecuta la opción de config seleccionada e invoca la función respectiva
+:params: p_config_selection
+"""
+def execute_config_opt(p_config_selection, p_file_to_update):
+
+    config_option = p_config_selection
+    image = p_file_to_update
+    
+    while config_option != 0:
+        if config_option == 1:
+            # 1. Actualizar la transparencia de la MA
+            
+            if "_text_wm.png" in image:
+                new_alpha = input("Ingrese la nueva escala de opacidad de la marca de agua - 0.1 - 1.0: \n")
+                update_wm_text_transp()
+            else:
+                update_wm_img_transp()
+        
+        elif config_option == 2:
+            # 2. Redimensionar la MA
+            print("")
+        
+        elif config_option == 3:
+            # 3. Cambiar ubicación de la MA
+            print("")
+
+        else:
+            print("\nOpción inválida. Vuelva a intentarlo nuevamente.\n")
+
+        config_option = show_wm_options()
+        
+
 
 """
 :function: select_wm_img()
@@ -180,16 +290,18 @@ def validate_file(p_saved_dir, p_file_to_update):
 :params: N/A
 """
 def select_wm_img():
-    saved_dir = "C:/ImgWatermark/Saved"
+    saved_dir = "C:/ImgWatermark/Saved/"
 
     read_files(saved_dir)
     time.sleep(3)
     
-    file_to_update = input("\nIngrese el nombre de la imagen a actualizar:\n")
+    file_to_update = input("Ingrese el nombre de la imagen a actualizar:\n")
     file_exists = validate_file(saved_dir, file_to_update)
 
     if file_exists == True:
-        print("Archivo existe... Invocar función para actualizar")
+        print("\nCargando menú de configuraciones\n")
+        config_selection = show_wm_options()
+        execute_config_opt(config_selection, file_to_update);
     else:
         print("La imagen no existe, por favor trate nuevamente")
 

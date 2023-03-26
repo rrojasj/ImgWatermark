@@ -38,9 +38,11 @@ while option_menu != 0:
         # Agregar marca de agua a un archivo
         img_name = input("\n2. Ingrese el nombre de la imagen para la marca de agua: \n")
         file_path = input("\n2. Ingrese la ruta del directorio de la imagen: \n")
-        time.sleep(3)
-        if os.path.exists(file_path):
-            add_watermark(img_name, file_path) # Envía argumentos
+        # time.sleep(3)
+        
+        if verify_dir(file_path):
+            add_watermark(img_name, file_path)
+            
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
     
