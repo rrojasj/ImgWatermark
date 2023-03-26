@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+from img_wm_functions import *
+
 # ============================================ #
 #                INICIO: MENU
 # ============================================ #
