@@ -28,7 +28,7 @@ while option_menu != 0:
             alert_message = "Cargando imágenes..."
             show_alert(alert_message) # No está mostrando el pop-up
             print("\nCargando imágenes...")
-            time.sleep(3)
+            # time.sleep(3)
             read_files(file_path)
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
@@ -47,7 +47,7 @@ while option_menu != 0:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
     
     elif option_menu == 3:
-        select_wm_img()
+        print("Necesita desarrollo!! Gracias.")
 
     else:
         print("Opción inválida.\n")
