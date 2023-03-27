@@ -95,20 +95,20 @@ def save_image():
     else:
         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
-def get_wm_config_values(p_width, p_height, p_txt_w, p_txt_h, p_draw) -> dict:
+def get_wm_config_values(p_width, p_height, p_txt_w, p_txt_h) -> dict:
 
     # calculate the x,y coordinates of the text  *******
     margin = 10
     x = (p_width/p_txt_w)+margin # width - text_width - margin
     y = p_height/p_txt_h # height - text_height - margin
     
-    dft_values_true = int(input("Desea valores por defecto de la marca o ingresar nuevos valores:\n1. Si\n2. No\n"))
+    dft_values_true = int(input("Desea valores por defecto de la marca:\n1. Si\n2. No\n"))
 
-    if dft_values_true == True:
-        config_values = {"opacity": 255, "size": [x,y], "coords": [p_txt_w,p_txt_h]}
+    if dft_values_true == 1:
+        config_values = {"op": 255, "sz": [x,y], "coords": [p_txt_w,p_txt_h]}
     else:
         opac = int(input("Ingresar el valor de la opacidad entre 0 y 255:\n"))
-        config_values["opacity"].append(opac)
+        config_values["op"].append(opac)
         print("\n")
 
         # Se necesita la validación
@@ -120,6 +120,7 @@ def get_wm_config_values(p_width, p_height, p_txt_w, p_txt_h, p_draw) -> dict:
         config_values["size"][1].append(h)
         print("\n")
 
+        # Se necesita validación
         x = int(input("Ingresar la coordenada X de la marca de agua:\n"))
         config_values["coords"][0].append(w)
         print("\n")
@@ -157,7 +158,7 @@ def wm_text(p_file_path, p_img_name):
     font = ImageFont.truetype('arial.ttf', 24)
     text_width, text_height = draw.textsize(text, font)
 
-    config_values = get_wm_config_values(width, height, text_width, text_height, )
+    config_values = get_wm_config_values(width, height, text_width, text_height)
 
 
 
@@ -229,7 +230,7 @@ def wm_image(p_file_path, p_img_name, p_option_1):
 :description: Agrega una marca de agua a la imagen indicada por el usuario
 :params: p_file_name
 """
-def add_watermark(p_file_name, p_file_path, p_wm_config_option): # recibe parámetros
+def add_watermark(p_file_name, p_file_path): # recibe parámetros
     file_path = p_file_path
     img_name = p_file_name
 
