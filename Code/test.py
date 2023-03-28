@@ -251,42 +251,142 @@
 # out.show()
 
 
-from PIL import Image
+# -------------------------------------------------------------
+# -------------------------------------------------------------
 
-# Function to change the image size
-def changeImageSize(maxWidth, 
-                    maxHeight, 
-                    image):
+# """
+# :function: update_wm_text_opacity()
+# :description: Ejecuta la función para actualizar la transparencia de la marca de agua
+# :params: 
+# """
+# def update_wm_text_opacity(p_file_path, p_img_name, p_new_alpha):
     
-    widthRatio  = maxWidth/image.size[0]
-    heightRatio = maxHeight/image.size[1]
+#     # Crear un objeto imagen desde la imagen original
+#     # Se almacena en la variable 'image'
+#     full_path = p_file_path+p_img_name
+#     image = Image.open(full_path)
+#     width, height = image.size
 
-    newWidth    = int(widthRatio*image.size[0])
-    newHeight   = int(heightRatio*image.size[1])
+#     # Texto a pintar en el objeto imagen que se creó
+#     draw = ImageDraw.Draw(image)
+#     text = "ImgWatermark"
+    
+#     # Salvar la imagen en el folder que el usuario seleccione
+#     # C:/ImgWatermark/Saved/
+#     save_location = input("Seleccione la ubicación donde desea guardar la marca de agua: \n")
+#     save_true = ""
+#     if verify_dir(save_location):
+#         save_true = save_location 
+#     else:
+#         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
-    newImage    = image.resize((newWidth, newHeight))
-    return newImage
+#     font = ImageFont.truetype('arial.ttf', 24)
+#     text_width, text_height = draw.textsize(text, font)
 
-# Take two images    
-image1 = Image.open("C:/ImgWatermark/Documents/video_game_3.png")
-image2 = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
+#     # calculate the x,y coordinates of the text
+#     margin = 10
+#     x = (width/text_width)+margin # width - text_width - margin
+#     y = height/text_height # height - text_height - margin
 
-# Make the sizes of images uniform
-image3 = changeImageSize(800, 500, image1)
-image4 = changeImageSize(200, 50, image2)
+#     # Pintar la marca de agua en la esquina superior izquierda 
+#     new_watermark = draw.text((x,y), text, font=font, fill=(255,255,255,p_new_alpha))
+#     image.show()
 
-# Make sure the images have alpha channels
-image3.putalpha(1)
-image4.putalpha(1)
+#     # Salvar la imagen en el folder predeterminado
+#     image.save(save_true+ p_img_name.replace('.png','') +'_text_wm.png')
+#     print("\nImagen guardada en la ruta destinada: " + save_true)
+#     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
-# Display the images
-image3.show()
-image4.show()
+# """
+# :function: update_wm_img_opacity()
+# :description: Ejecuta la función para actualizar la transparencia de la marca de agua
+# :params: 
+# """
+# def update_wm_img_opacity(p_file_path, p_img_name, p_new_alpha, box=(0,0)):
 
-# Do an alpha composite of image4 over image3
-alphaComposited = Image.alpha_composite(image3, image4)
-#alphaBlended = Image.blend(image4, image3,.1)
-#alphaBlended.show()
+#     return ""
+    
+# """
+# :function: update_wm_dimension()
+# :description: Ejecuta la función para redimensionar el tamaño de la marca de agua
+# :params: 
+# """
+# def update_wm_dimemsion():
+#     return print("")
 
-# Display the alpha composited image
-alphaComposited.show()
+# """
+# :function: update_wm_location()
+# :description: Ejecuta la función para actualizar la ubicación de la marca de agua en la imagen
+# :params: 
+# """
+# def update_wm_location():
+#     return print("")
+
+# """
+# :function: execute_config_opt()
+# :description: Ejecuta la opción de config seleccionada e invoca la función respectiva
+# :params: p_config_selection
+# """
+# def get_wm_config_values(p_config_selection, p_saved_dir, p_file_to_update):
+
+#     while p_config_selection != 0:
+#         if p_config_selection == 1:
+#             # 1. Actualizar la transparencia de la MA
+            
+#             if "_text_wm.png" in p_file_to_update:
+#                 new_alpha = float(input("Ingrese la nueva escala de opacidad de la marca de agua:\n- Valores entre: 0.1 y 1.0\n"))
+#                 update_wm_text_opacity(p_saved_dir, p_file_to_update, new_alpha)
+#             else:
+#                 option_1 = False
+#                 wm_image(p_saved_dir, p_file_to_update, option_1)
+        
+#         elif p_config_selection == 2:
+#             # 2. Redimensionar la MA
+#             print("")
+        
+#         elif p_config_selection == 3:
+#             # 3. Cambiar ubicación de la MA
+#             print("")
+
+#         else:
+#             print("\nOpción inválida. Vuelva a intentarlo nuevamente.\n")
+
+#         p_config_selection = show_wm_options()
+
+# """
+# :function: select_wm_img()
+# :description: Muestra las imágenes con marca de agua guardados y solicita ingresar el nombre de la imagen que se necesita actualizar la marca de agua 
+# :params: N/A
+# """
+# def select_wm_img():
+#     saved_dir = "C:/ImgWatermark/Saved/"
+
+#     read_files(saved_dir)
+#     # time.sleep(3)
+    
+#     file_to_update = input("Ingrese el nombre de la imagen a actualizar:\n")
+#     full_path = saved_dir + file_to_update
+#     file_exists = validate_file(full_path)
+
+#     if file_exists == True:
+#         print("\nCargando menú de configuraciones\n")
+#         config_selection = show_wm_options()
+#         execute_config_opt(config_selection, saved_dir, file_to_update);
+#     else:
+#         print("La imagen no existe, por favor trate nuevamente")
+
+# Para ser implementada
+# def show_wm_options():
+#     """
+#     :function: show_wm_options()
+#     :description: Muestra el menú de configuraciones para la marca de agua
+#     :params: N/A
+#     """
+#     print("\n************** OPCIONES PARA CONFIGURAR MARCA DE AGUA **************")
+#     print("[1] Actualizar opacidad de la marca de agua en la imagen")
+#     print("[2] Actualizar tamaño de la marca de agua en la imagen")
+#     print("[3] Actualizar ubicación de la marca de agua en la imagen")
+#     print("[0] Salir de la configuración \n")
+
+#     config_selection = int(input("Seleccione una opción de configuración: \n"))
+#     return config_selection
