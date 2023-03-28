@@ -81,12 +81,13 @@ def read_files(p_file_path):
             print('- '+image)
     print('\n')
 
-"""
-:function: read_files()
-:description: Verifica que la ruta ingresada para guardar el archivo esté correcta.
-:params: p_file_path
-"""
+
 def save_image():
+    """
+    :function: read_files()
+    :description: Verifica que la ruta ingresada para guardar el archivo esté correcta.
+    :params: p_file_path
+    """
     save_location = input("Seleccione la ubicación donde desea guardar la marca de agua: \n")
     save_true = ""
     if verify_dir(save_location):
@@ -95,44 +96,62 @@ def save_image():
     else:
         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
-def get_wm_config_values(p_width, p_height, p_txt_w, p_txt_h) -> dict:
+def config_values(p_file_path, p_img_name) -> dict:
 
-    # calculate the x,y coordinates of the text  *******
-    margin = 10
-    x = (p_width/p_txt_w)+margin # width - text_width - margin
-    y = p_height/p_txt_h # height - text_height - margin
+    # Crear un objeto imagen desde la imagen original
+    # Se almacena en la variable 'image'
     
-    dft_values_true = int(input("Desea valores por defecto de la marca:\n1. Si\n2. No\n"))
+    # 
+    # 
+    # 
 
-    if dft_values_true == 1:
-        config_values = {"op": 255, "sz": [x,y], "coords": [p_txt_w,p_txt_h]}
+    # # calculate the x,y coordinates of the text  *******
+    # margin = 10
+    # x = (width/p_txt_w)+margin # width - text_width - margin
+    # y = height/p_txt_h # height - text_height - margin
+    
+    # config_values = {"op": 0, "sz": [x,y], "coords": [p_txt_w,p_txt_h]}
+
+    full_path = p_file_path+p_img_name
+    image = Image.open(full_path).convert("RGBA")
+    orig_width, orig_height = image.size
+
+    txt = Image.new('RGBA', image.size, (255,255,255,0))
+
+    # Obtener el tipo de fuente y tamaño
+    fnt = ImageFont.truetype('arial.ttf', 24)
+    # get a drawing context
+    draw = ImageDraw.Draw(txt)
+    wm_txt = "ImgWatermark"
+
+    alpha = int(input("Ingresar el valor de la opacidad entre 0 y 255:\n"))    
+    wm_width = int(input("Ingresar el ancho de la marca de agua:\n"))
+    wm_height = int(input("Ingresar la altura de la marca de agua:\n"))
+
+    coord_x = 0
+    coord_y = 0
+    msj = "El tamaño de la marca de agua debe ser menor que el tamaño de la imagen.\nPor favor intente nuevamente. Muchas gracias."
+    if wm_width < orig_width:
+        if wm_height < orig_height:
+            coord_x = int(input("Ingresar la coordenada X de la marca de agua:\n"))
+            coord_y = int(input("Ingresar la coordenada Y de la marca de agua:\n"))
+        else:
+            print(msj)
     else:
-        opac = int(input("Ingresar el valor de la opacidad entre 0 y 255:\n"))
-        config_values["op"].append(opac)
-        print("\n")
-
-        # Se necesita la validación
-        w = int(input("Ingresar el ancho de la marca de agua:\n"))
-        config_values["size"][0].append(w)
-        print("\n")
-
-        h = int(input("Ingresar la altura de la marca de agua:\n"))
-        config_values["size"][1].append(h)
-        print("\n")
-
-        # Se necesita validación
-        x = int(input("Ingresar la coordenada X de la marca de agua:\n"))
-        config_values["coords"][0].append(w)
-        print("\n")
-
-        y = int(input("Ingresar la coordenada Y de la marca de agua:\n"))
-        config_values["coords"][1].append(h)
-        print("\n")
-
-    return config_values
+        print(msj)
     
+    draw.text((coord_x, coord_y), wm_txt, font= fnt, fill=(255,255,255,alpha))
+    txt = txt.rotate(45) 
+    
+    wm_image = Image.alpha_composite(image, txt)
+    wm_image.show
 
-    return ""
+    # Salvar la imagen en el folder predeterminado
+    save_true = save_image()
+    new_name = input("Por favor el nombre de la imagen para guardar:\n")
+    wm_image.save(save_true+new_name+'.png')
+    print("\nImagen guardada en la ruta destinada: " +save_true)
+    print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 def wm_text(p_file_path, p_img_name):
     """
@@ -143,36 +162,30 @@ def wm_text(p_file_path, p_img_name):
     # Crear un objeto imagen desde la imagen original
     # Se almacena en la variable 'image'
     full_path = p_file_path+p_img_name
-    image = Image.open(full_path).convert("RGBA")
-    txt = Image.new('RGBA', image.size, (255,255,255,0))
+    image = Image.open(full_path)
     width, height = image.size
 
     # Texto a pintar en el objeto imagen que se creó
-    draw = ImageDraw.Draw(txt)
+    draw = ImageDraw.Draw(image)
     text = "ImgWatermark"
-    
-    # Salvar la imagen en el folder que el usuario seleccione
-    # C:/ImgWatermark/Saved/
-    save_true = save_image()
 
     font = ImageFont.truetype('arial.ttf', 24)
     text_width, text_height = draw.textsize(text, font)
 
-    config_values = get_wm_config_values(width, height, text_width, text_height)
+    # calculate the x,y coordinates of the text
+    margin = 10
+    x = (width/text_width)+margin # width - text_width - margin
+    y = height/text_height # height - text_height - margin
 
-
-
-    # Pintar la marca de agua en la esquina superior izquierda ******* *******
-    draw.text(config_values["coords"], text, fill=(255,255,255, config_values["opacity"]), font=font)
-
-    #Combining Original Image with Text and Saving
-    watermarked = Image.alpha_composite(image, txt)
+    # Pintar la marca de agua en la esquina superior izquierda 
+    new_watermark = draw.text((x,y), text, font=font)
     image.show()
 
     # Salvar la imagen en el folder predeterminado
-    new_name = input("Indique el nombre a guardar de la nueva imagen con la marca de agua.")
-    wm_image.save(save_true+new_name+'.png')
-    print("\nImagen guardada en la ruta destinada:" +save_true)
+    save_true = save_image()
+    new_name = input("Por favor el nombre de la imagen para guardar:\n")
+    image.save(save_true+new_name+'.png')
+    print("\nImagen guardada en la ruta destinada: " +save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
 """
@@ -211,16 +224,16 @@ def wm_image(p_file_path, p_img_name, p_option_1):
 
     source_img = Image.open(p_file_path+p_img_name)
     if p_option_1 == True:
-        wm_image = trans_paste(source_img,1.0,(15,15))
+        image = trans_paste(source_img,1.0,(15,15))
     else:
         new_alpha = float(input("Ingrese la nueva escala de opacidad de la marca de agua:\n- Valores entre: 0.1 y 1.0\n"))
-        wm_image = trans_paste(source_img,new_alpha,(15,15))
+        image = trans_paste(source_img,new_alpha,(15,15))
 
     # No es requerido mostrar la imagen - Deshabilitar
     # wm_image.show()
     print(save_true)
     new_name = input("Nombre a guardar")
-    wm_image.save(save_true+new_name+'.png')
+    image.save(save_true+new_name+'.png')
     print("\nImagen guardada en la ruta destinada:" +save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
@@ -241,7 +254,13 @@ def add_watermark(p_file_name, p_file_path): # recibe parámetros
 
             if wm_type == 1:
                 
-                wm_text(file_path, img_name)
+                default_values = int(input("\nDesea valores por defecto de la marca:\n1. Si\n2. No\n"))
+
+                if default_values == 1:
+                    wm_text(file_path, img_name)
+                else:
+                    config_values(file_path, img_name)
+                
                 break
             else:
                 option_1 = True
