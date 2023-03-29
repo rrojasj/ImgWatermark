@@ -79,7 +79,7 @@ def save_image():
     else:
         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
-def config_values(p_file_path, p_img_name) -> dict:
+def config_values(p_file_path, p_img_name):
     """
     :function: config_values()
     :description: Pinta el la marca de agua como texto usando valores ingresados por el usuario
@@ -237,7 +237,8 @@ def add_watermark(p_file_name, p_file_path): # recibe parámetros
                 break
             else:
                 option_1 = True
-                wm_image(file_path, img_name, option_1)
+                print("Imágenes no soportadas, implementación en proceso.")
+                # wm_image(file_path, img_name, option_1)
                 break
     else:
         print("\n La imagen no se encuentra en el directorio.")
