@@ -36,7 +36,7 @@ while option_menu != 0:
        
     elif option_menu == 2:
         # Agregar marca de agua a un archivo
-        img_name = input("\n2. Ingrese el nombre de la imagen para la marca de agua: \n")
+        img_name = input("\n1. Ingrese el nombre de la imagen para la marca de agua: \n")
         file_path = input("\n2. Ingrese la ruta del directorio de la imagen: \n")
         # time.sleep(3)
         
@@ -47,7 +47,13 @@ while option_menu != 0:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
     
     elif option_menu == 3:
-        print("Necesita desarrollo!! Gracias.")
+        file_path = input("\n1. Ingrese la ruta del directorio de la imagen: \n")
+
+        if verify_dir(file_path):
+            img_list = get_several_imgs(file_path)
+            
+        else:
+            print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
     else:
         print("Opción inválida.\n")

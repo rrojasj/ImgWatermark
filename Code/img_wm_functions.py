@@ -35,14 +35,14 @@ def main_menu():
     print("\n************** MENÚ DE OPCIONES **************")
     print("[1] Obtener la lista de archivos del directorio")
     print("[2] Agregar marca de agua a un archivo")
-    # print("[3] Configuración de marca de agua")
+    print("[3] Aplicar marca de agua a diferentes imágenes")
     print("[0] Salir del programa \n")
 
 def verify_dir(p_file_path):
     """
-    :function: show_wm_options()
-    :description: Muestra el menú de configuraciones para la marca de agua
-    :param
+    function: show_wm_options()
+    description: Muestra el menú de configuraciones para la marca de agua
+    param
     """
     if os.path.exists(p_file_path):
         return True # Envía argumentos
@@ -67,9 +67,9 @@ def read_files(p_file_path):
 
 def save_image():
     """
-    :function: read_files()
-    :description: Verifica que la ruta ingresada para guardar el archivo esté correcta.
-    :params: p_file_path
+    function: read_files()
+    description: Verifica que la ruta ingresada para guardar el archivo esté correcta.
+    params: p_file_path
     """
     save_location = input("Seleccione la ubicación donde desea guardar la marca de agua: \n")
     save_true = ""
@@ -81,9 +81,9 @@ def save_image():
 
 def config_values(p_file_path, p_img_name):
     """
-    :function: config_values()
-    :description: Pinta el la marca de agua como texto usando valores ingresados por el usuario
-    :params: p_file_path, p_img_name
+    function: config_values()
+    description: Pinta el la marca de agua como texto usando valores ingresados por el usuario
+    params: p_file_path, p_img_name
     """
     # Crear un objeto imagen desde la imagen original
     # Se almacena en la variable 'image'
@@ -130,9 +130,9 @@ def config_values(p_file_path, p_img_name):
 
 def wm_text(p_file_path, p_img_name):
     """
-    :function: wm_text()
-    :description: Agrega una marca de agua a la imagen indicada por el usuario
-    :params: p_image
+    function: wm_text()
+    description: Agrega una marca de agua a la imagen indicada por el usuario
+    params: p_image
     """
     # Crear un objeto imagen desde la imagen original
     # Se almacena en la variable 'image'
@@ -165,9 +165,9 @@ def wm_text(p_file_path, p_img_name):
 
 def trans_paste(p_source_img,p_alpha,box=(0,0)):
     """
-    :function: trans_paste()
-    :description: Agrega una imagen con transparencia como marca de agua
-    :params: bg
+    function: trans_paste()
+    description: Agrega una imagen con transparencia como marca de agua
+    params: bg
     """
     wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
 
@@ -182,9 +182,9 @@ def trans_paste(p_source_img,p_alpha,box=(0,0)):
 
 def wm_image(p_file_path, p_img_name, p_option_1):
     """
-    :function: wm_image()
-    :description: Agrega una marca de agua a la imagen indicada por el usuario
-    :params: p_file_name
+    function: wm_image()
+    description: Agrega una marca de agua a la imagen indicada por el usuario
+    params: p_file_name
     """
 
     # Salvar la imagen en el folder que el usuario seleccione
@@ -213,9 +213,9 @@ def wm_image(p_file_path, p_img_name, p_option_1):
 
 def add_watermark(p_file_name, p_file_path): # recibe parámetros
     """
-    :function: add_wm_image()
-    :description: Agrega una marca de agua a la imagen indicada por el usuario
-    :params: p_file_name
+    function: add_wm_image()
+    description: Agrega una marca de agua a la imagen indicada por el usuario
+    params: p_file_name
     """
     file_path = p_file_path
     img_name = p_file_name
@@ -246,9 +246,36 @@ def add_watermark(p_file_name, p_file_path): # recibe parámetros
 
 def validate_file(p_full_path):
     """
-    :function: validate_file()
-    :description: Valida si la imágen existe o no en el directorio
-    :params: 
+    function: validate_file()
+    description: Valida si la imágen existe o no en el directorio
+    params: 
     """
     isExisting = os.path.exists(p_full_path)
     return isExisting
+
+def get_several_imgs(p_img_path) -> list:
+    """
+    function: get_several_imgs(String)
+    description: Obtener la lista de imágenes que se debe agregar la marca de agua
+    params: p_img_path
+    """
+    img_path = p_img_path
+    breaker = 0
+    img_list = []
+
+    while breaker != 1:
+        image = input("Ingrese el nombre de la imagen - (o ingrese 1 para terminar)\n")
+        if image != "1":
+            full_path = img_path+image
+            if validate_file(full_path):
+                img_list.append(image)
+            else:
+                print("La imagen no existe en el directorio.")     
+        else:
+            break
+
+    return img_list
+
+def apply_wm_several_imgs(p_img_path):
+
+    return ""
