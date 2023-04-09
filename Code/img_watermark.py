@@ -43,7 +43,7 @@ while option_menu != 0:
         if verify_dir(file_path):
 
             wm_data_dict = get_wm_data()
-            add_watermark(img_name, file_path, wm_data_dict)
+            add_watermark(img_name, file_path, wm_data_dict, p_sev_imgs=False)
             
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
