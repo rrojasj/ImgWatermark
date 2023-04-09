@@ -390,3 +390,14 @@
 
 #     config_selection = int(input("Seleccione una opción de configuración: \n"))
 #     return config_selection
+
+wm_type = int(input("\nSeleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
+default_values = int(input("\nIndique si desea los valores por defecto:\n1. Si\n2. No\n"))
+
+wm_data_dict = {'type': wm_type, 'option': default_values}
+
+counter = 0
+for opt in wm_data_dict:
+    print(wm_data_dict[opt])
+
+print(wm_data_dict['type'])

@@ -19,6 +19,7 @@ main_menu()
 option_menu = int(input("Seleccione una opción: \n"))
 
 while option_menu != 0:
+    
     if option_menu == 1:
         # Obtener la lista de archivos del directorio
         file_path = input("\n1. Ingrese la ruta del directorio de las imágenes: \n")
@@ -32,7 +33,6 @@ while option_menu != 0:
             read_files(file_path)
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
-
        
     elif option_menu == 2:
         # Agregar marca de agua a un archivo
@@ -41,16 +41,21 @@ while option_menu != 0:
         # time.sleep(3)
         
         if verify_dir(file_path):
-            add_watermark(img_name, file_path)
+
+            wm_data_dict = get_wm_data()
+            add_watermark(img_name, file_path, wm_data_dict)
             
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
     
     elif option_menu == 3:
-        file_path = input("\n1. Ingrese la ruta del directorio de la imagen: \n")
+        file_path = input("\n1. Ingrese la ruta del directorio de las imágenes: \n")
 
         if verify_dir(file_path):
             img_list = get_several_imgs(file_path)
+            wm_data_dict = get_wm_data()
+
+            apply_wm_several_imgs(img_list, file_path, wm_data_dict)
             
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")

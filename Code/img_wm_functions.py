@@ -6,13 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-# importing TKinter library
-
 def show_alert(message):
     """
-    :function: select_wm_img()
-    :description: Muestra las imágenes con marca de agua guardados y solicita ingresar el nombre de la imagen que se necesita actualizar la marca de agua 
-    :params: N/A
+    function: select_wm_img()
+    description: Muestra las imágenes con marca de agua guardados y solicita ingresar el nombre de la imagen que se necesita actualizar la marca de agua 
+    params: N/A
     """
     from tkinter import Tk, Label
 
@@ -38,7 +36,7 @@ def main_menu():
     print("[3] Aplicar marca de agua a diferentes imágenes")
     print("[0] Salir del programa \n")
 
-def verify_dir(p_file_path):
+def verify_dir(p_file_path:str):
     """
     function: show_wm_options()
     description: Muestra el menú de configuraciones para la marca de agua
@@ -49,7 +47,7 @@ def verify_dir(p_file_path):
     else:
         return False
 
-def read_files(p_file_path):
+def read_files(p_file_path:str):
     """
     :function: read_files()
     :description: Lee e imprime el nombre de los archivos en un directorio específico
@@ -79,7 +77,7 @@ def save_image():
     else:
         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
-def config_values(p_file_path, p_img_name):
+def apply_wm_txt_config_values(p_file_path:str, p_img_name:str):
     """
     function: config_values()
     description: Pinta el la marca de agua como texto usando valores ingresados por el usuario
@@ -128,7 +126,7 @@ def config_values(p_file_path, p_img_name):
     print("\nImagen guardada en la ruta destinada: " +save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
-def wm_text(p_file_path, p_img_name):
+def apply_wm_txt(p_file_path:str, p_img_name:str):
     """
     function: wm_text()
     description: Agrega una marca de agua a la imagen indicada por el usuario
@@ -163,7 +161,7 @@ def wm_text(p_file_path, p_img_name):
     print("\nImagen guardada en la ruta destinada: " +save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
-def trans_paste(p_source_img,p_alpha,box=(0,0)):
+def trans_paste(p_source_img:Image,p_alpha:float,box:tuple=(0,0)) -> Image:
     """
     function: trans_paste()
     description: Agrega una imagen con transparencia como marca de agua
@@ -180,11 +178,11 @@ def trans_paste(p_source_img,p_alpha,box=(0,0)):
 
     return p_source_img
 
-def wm_image(p_file_path, p_img_name, p_option_1):
+def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int):
     """
     function: wm_image()
     description: Agrega una marca de agua a la imagen indicada por el usuario
-    params: p_file_name
+    params: p_file_path, p_img_name, p_option_1
     """
 
     # Salvar la imagen en el folder que el usuario seleccione
@@ -197,7 +195,7 @@ def wm_image(p_file_path, p_img_name, p_option_1):
         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
     source_img = Image.open(p_file_path+p_img_name)
-    if p_option_1 == True:
+    if default_option == 1:
         image = trans_paste(source_img,1.0,(15,15))
     else:
         new_alpha = float(input("Ingrese la nueva escala de opacidad de la marca de agua:\n- Valores entre: 0.1 y 1.0\n"))
@@ -205,17 +203,17 @@ def wm_image(p_file_path, p_img_name, p_option_1):
 
     # No es requerido mostrar la imagen - Deshabilitar
     # wm_image.show()
-    print(save_true)
-    new_name = input("Nombre a guardar")
+    
+    new_name = input("Nombre a guardar\n")
     image.save(save_true+new_name+'.png')
     print("\nImagen guardada en la ruta destinada:" +save_true)
     print("\nGracias por utilizar ImageWatermark Tool.\n")
 
-def add_watermark(p_file_name, p_file_path): # recibe parámetros
+def add_watermark(p_file_name:str, p_file_path:str, p_wm_data_dict:dict): # recibe parámetros
     """
     function: add_wm_image()
     description: Agrega una marca de agua a la imagen indicada por el usuario
-    params: p_file_name
+    params: p_file_name, p_file_path, p_wm_type, p_default_values
     """
     file_path = p_file_path
     img_name = p_file_name
@@ -223,28 +221,23 @@ def add_watermark(p_file_name, p_file_path): # recibe parámetros
     for image in os.listdir(file_path):
         
         if image == img_name:
-            wm_type = int(input("\nSeleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
+            
+            if p_wm_data_dict['type'] == 1:
 
-            if wm_type == 1:
-                
-                default_values = int(input("\nDesea valores por defecto de la marca:\n1. Si\n2. No\n"))
-
-                if default_values == 1:
-                    wm_text(file_path, img_name)
+                if p_wm_data_dict['df_option'] == 1:
+                    apply_wm_txt(file_path, img_name)
                 else:
-                    config_values(file_path, img_name)
+                    apply_wm_txt_config_values(file_path, img_name)
                 
                 break
             else:
-                option_1 = True
-                print("Imágenes no soportadas, implementación en proceso.")
-                # wm_image(file_path, img_name, option_1)
+                apply_wm_img(file_path, img_name, p_wm_data_dict['df_option'])
                 break
     else:
         print("\n La imagen no se encuentra en el directorio.")
         time.sleep(4)
 
-def validate_file(p_full_path):
+def validate_file(p_full_path:str) -> bool:
     """
     function: validate_file()
     description: Valida si la imágen existe o no en el directorio
@@ -253,7 +246,7 @@ def validate_file(p_full_path):
     isExisting = os.path.exists(p_full_path)
     return isExisting
 
-def get_several_imgs(p_img_path) -> list:
+def get_several_imgs(p_img_path:str) -> list:
     """
     function: get_several_imgs(String)
     description: Obtener la lista de imágenes que se debe agregar la marca de agua
@@ -270,12 +263,25 @@ def get_several_imgs(p_img_path) -> list:
             if validate_file(full_path):
                 img_list.append(image)
             else:
-                print("La imagen no existe en el directorio.")     
+                print("La imagen no existe en el directorio.") 
         else:
             break
 
     return img_list
 
-def apply_wm_several_imgs(p_img_path):
+def apply_wm_several_imgs(p_img_list:list, p_file_path:str, p_wm_data_dict:dict):
+    
+    i = 0
 
-    return ""
+    while i < len(p_img_list):
+        add_watermark(p_img_list[i], p_file_path, p_wm_data_dict)
+        i += 1
+
+def get_wm_data() -> dict:
+    
+    wm_type = int(input("\nSeleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
+    default_option = int(input("\nIndique si desea los valores por defecto:\n1. Si\n2. No\n"))
+
+    add_wm_data_dict = {'type': wm_type, 'df_option': default_option}
+
+    return add_wm_data_dict
