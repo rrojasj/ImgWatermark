@@ -59,6 +59,13 @@ while option_menu != 0:
             
         else:
             print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
+    
+    elif option_menu == 4:
+        config_menu()
+        config_option = int(input("Seleccione una opción: \n"))
+
+        msg = exec_config_option(config_option)
+        print(msg)
 
     else:
         print("Opción inválida.\n")

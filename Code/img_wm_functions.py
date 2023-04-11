@@ -34,7 +34,18 @@ def main_menu():
     print("[1] Obtener la lista de archivos del directorio")
     print("[2] Agregar marca de agua a un archivo")
     print("[3] Aplicar marca de agua a diferentes imágenes")
+    print("[4] Mostrar menú de configuraciones")
     print("[0] Salir del programa \n")
+
+def config_menu():
+    print("\n************** MENÚ DE CONFIGURACIONES **************")
+    print("[1] Configuración de Tamaño de marcas de agua")
+    print("[2] Configuración de Texto de agua a la imagen")
+    print("[3] Configuración de Opacidad de marcas de agua")
+    print("[4] Configuración de Ubicación de marcas de agua")
+    print("[5] Configuración de Auto ajuste de marcas de agua a la imagen")
+    print("[6] Configuración de Cantidad de repeticiones de marcas de agua")
+    print("[0] Salir de configuraciones \n") 
 
 def verify_dir(p_file_path:str):
     """
@@ -181,7 +192,7 @@ def trans_paste(p_source_img:Image,p_alpha:float,box:tuple=(0,0)) -> Image:
     # Agrega transparencia a la imagen marca de agua
     wm_img_trans = Image.new("RGBA",wm_img.size)
     wm_img_trans = Image.blend(wm_img_trans,wm_img,p_alpha)
-
+    
     # Se une la imagen marca de agua con la imagen origen
     p_source_img.paste(wm_img_trans,box,wm_img_trans)
 
@@ -299,3 +310,23 @@ def get_wm_data() -> dict:
     add_wm_data_dict = {'type': wm_type, 'df_option': default_option}
 
     return add_wm_data_dict
+
+def exec_config_option(p_config_option:int) -> str:
+
+    while p_config_option != 0:
+        if p_config_option == 1:
+            msg = "Tamaño"
+        elif p_config_option == 2:
+            msg = "Texto"
+        elif p_config_option == 3:
+            msg = "Opacidad"
+        elif p_config_option == 4:
+            msg = "Ubicación"
+        elif p_config_option == 5:
+            msg = "Auto ajuste"
+        elif p_config_option == 6:
+            msg = "Cantidad de repeticiones"
+        else:
+            msg = "Opción inválida. Seleccione nuevamente.\n"
+        return msg
+        
