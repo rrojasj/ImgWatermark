@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+import pickle
+
 def show_alert(message):
     """
     function: select_wm_img()
@@ -29,6 +31,58 @@ def show_alert(message):
 
     win.mainloop()
 
+def sv_config_options_pkl():
+    """
+    function: sv_config_options_pkl()
+    description: Guarda los valores por defecto en un archivo pickle
+    params: None
+    """
+    default_config = {
+        'Ancho': 130,
+        'Altura': 30,
+        'Texto': 'ImgWatermark',
+        'Transparencia': 128,
+        'Posición X': 15,
+        'Posición Y': 15,
+        'Auto-Ajuste': "Desactivado",
+        'Repeticiones': 1,
+    }
+
+    with open('default_config.pkl', 'wb') as f:  # open a text file
+        pickle.dump(default_config, f) # serialize the list
+    f.close()
+
+def ld_config_options_pkl():
+    """
+    function: ld_config_options_pkl()
+    description: Muestra los valores por defecto guardados en el archivo pickle
+    params: None
+    """
+    with open('default_config.pkl', 'rb') as f:
+
+        config_options_loaded = pickle.load(f) # Deserializar usando la función load()
+        print("\nValores por defecto actuales de la marca de agua:")
+
+        for key, value in config_options_loaded.items():
+            print('- ',key, ': ', value)
+
+def ed_config_options_pkl(p_config_key:str, p_config_value:str):
+    """
+    function: ed_config_options_pkl()
+    description: Actualiza los valores por defecto y los guarda en el archivo pickle
+    params: p_config_key, p_config_value
+    """
+    key = p_config_key
+    value = p_config_value
+
+    with open('default_config.pkl', 'rb') as f:
+        config_options_loaded = pickle.load(f)
+        config_options_loaded[key] = value
+        with open('default_config.pkl', 'wb') as f:  # open a text file
+            pickle.dump(config_options_loaded, f) # serialize the list
+
+            f.close()
+
 def main_menu():
     print("\n************** MENÚ DE OPCIONES **************")
     print("[1] Obtener la lista de archivos del directorio")
@@ -38,6 +92,7 @@ def main_menu():
     print("[0] Salir del programa \n")
 
 def config_menu():
+    ld_config_options_pkl()
     print("\n************** MENÚ DE CONFIGURACIONES **************")
     print("[1] Configuración de Tamaño de marcas de agua")
     print("[2] Configuración de Texto de agua a la imagen")
@@ -51,7 +106,7 @@ def verify_dir(p_file_path:str):
     """
     function: show_wm_options()
     description: Muestra el menú de configuraciones para la marca de agua
-    param
+    params: p_file_path
     """
     if os.path.exists(p_file_path):
         return True # Envía argumentos
@@ -314,19 +369,80 @@ def get_wm_data() -> dict:
 def exec_config_option(p_config_option:int) -> str:
 
     while p_config_option != 0:
+
         if p_config_option == 1:
-            msg = "Tamaño"
+            w_key = "Ancho"
+            width = input("Ingrese el nuevo ancho de la marca de agua:\n")
+            ed_config_options_pkl(w_key, width)
+            
+            h_key = "Altura"
+            height = input("Ingrese la nueva altura de la marca de agua:\n")
+            ed_config_options_pkl(h_key, height)
+            break
+            
         elif p_config_option == 2:
-            msg = "Texto"
+            text_key = "Texto"
+            text = input("Ingrese el nuevo texto de la marca de agua:\n")
+            ed_config_options_pkl(text_key, text)
+            break
+
         elif p_config_option == 3:
-            msg = "Opacidad"
+            text_key = "Transparencia"
+            opacity = input("Ingrese el nuevo grado de transparencia de la marca de agua:\n")
+            ed_config_options_pkl(text_key, opacity)
+            break
+
         elif p_config_option == 4:
-            msg = "Ubicación"
+            x_key = "Posición X"
+            x_pos = input("Ingrese la nueva posición en el eje 'x' de la marca de agua:\n")
+            ed_config_options_pkl(x_key, x_pos)
+            
+            
+            y_key = "Posición Y"
+            y_pos = input("Ingrese la nueva posición en el eje 'y' de la marca de agua:\n")
+            ed_config_options_pkl(y_key, y_pos)
+            break
+
         elif p_config_option == 5:
-            msg = "Auto ajuste"
+
+            actual_value = ""
+            auto_adj_key = "Auto-Ajuste"
+
+            with open('default_config.pkl', 'rb') as f:
+                config_options_loaded = pickle.load(f)
+                actual_value = config_options_loaded['Auto-Ajuste']
+            
+            if actual_value == "Activado":
+                print(f"Auto-Ajuste: Activado")
+                change_req = int(input("Desea Desactivar el Auto-Ajuste? 1. Si  2. No\n"))
+                if change_req == 1:
+                    inactivate_auto_adj = "Desactivado"
+                    ed_config_options_pkl(auto_adj_key, inactivate_auto_adj)
+                else:
+                    print("Sigue con Auto-Ajuste activado")
+            else:
+                print(f"Auto-Ajuste: Desactivado")
+                change_req = int(input("Desea Activar el Auto-Ajuste? 1. Si  2. No\n"))
+                if change_req == 1:
+                    activate_auto_adj = "Activado"
+                    ed_config_options_pkl(auto_adj_key, activate_auto_adj)
+                else:
+                    print("Sigue con Auto-Ajuste desactivado")
+            
+            break
+
         elif p_config_option == 6:
-            msg = "Cantidad de repeticiones"
+            text_key = "Repeticiones"
+            repetitions = input("Ingrese la nueva cantidad de repeticiones:\n")
+            ed_config_options_pkl(text_key, repetitions)
+            break
+
         else:
             msg = "Opción inválida. Seleccione nuevamente.\n"
-        return msg
+            print(msg)
+            break
+
+    config_menu()
+    config_option = int(input("Seleccione una opción: \n"))
+    exec_config_option(config_option)
         

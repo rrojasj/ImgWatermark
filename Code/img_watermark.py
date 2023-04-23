@@ -6,15 +6,20 @@ import tkinter
 # importing Pillow library
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
+from img_wm_functions import *
 import numpy as np
 import time
 
-from img_wm_functions import *
+# Importing pickle library
+import pickle
+
+# 
+
 
 # ============================================ #
 #                INICIO: MENU
 # ============================================ #
-
+sv_config_options_pkl()
 main_menu()
 option_menu = int(input("Seleccione una opción: \n"))
 
@@ -64,8 +69,7 @@ while option_menu != 0:
         config_menu()
         config_option = int(input("Seleccione una opción: \n"))
 
-        msg = exec_config_option(config_option)
-        print(msg)
+        exec_config_option(config_option)     
 
     else:
         print("Opción inválida.\n")

@@ -391,13 +391,111 @@
 #     config_selection = int(input("Seleccione una opción de configuración: \n"))
 #     return config_selection
 
-wm_type = int(input("\nSeleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
-default_values = int(input("\nIndique si desea los valores por defecto:\n1. Si\n2. No\n"))
+# wm_type = int(input("\nSeleccione el tipo de marca de agua:\n1. Texto\n2. Imagen\n"))
+# default_values = int(input("\nIndique si desea los valores por defecto:\n1. Si\n2. No\n"))
 
-wm_data_dict = {'type': wm_type, 'option': default_values}
+# wm_data_dict = {'type': wm_type, 'option': default_values}
 
-counter = 0
-for opt in wm_data_dict:
-    print(wm_data_dict[opt])
+# counter = 0
+# for opt in wm_data_dict:
+#     print(wm_data_dict[opt])
 
-print(wm_data_dict['type'])
+# print(wm_data_dict['type'])
+
+import pickle
+
+def save_pkl():
+
+    students = {
+        'Student 1': {
+            'ID': "1", 'Name': "Alice", 'Age' :10, 'Grade':4,
+        },
+        'Student 2': {
+            'ID': "2", 'Name':'Bob', 'Age':11, 'Grade':5
+        },
+        'Student 3': {
+            'ID': "3", 'Name':'Elena', 'Age':14, 'Grade':8
+        }
+    }
+
+    with open('student_file.pkl', 'wb') as f:  # open a text file
+        pickle.dump(students, f) # serialize the list
+
+    f.close()
+
+def load_pkl():
+
+    with open('student_file.pkl', 'rb') as f:
+
+        student_names_loaded = pickle.load(f) # deserialize using load()
+        print(student_names_loaded) # print student names
+        print(type(student_names_loaded))
+
+def add_new_student():
+    id = int(input("ID del estudiante\n"))
+    std_dict = "Student " + str(id)
+    name = input("Nombre del estudiante:\n")
+    age = int(input("Edad del estudiante:\n"))
+    grade = int(input("Grado del estudiante:\n"))
+
+    with open('student_file.pkl', 'rb') as f:
+        student_names_loaded = pickle.load(f)
+        student_names_loaded[std_dict] = {'ID': str(id), 'Name':name, 'Age':age, 'Grade':grade}
+        with open('student_file.pkl', 'wb') as f:  # open a text file
+            pickle.dump(student_names_loaded, f) # serialize the list
+
+            f.close()
+
+def update_student():
+    id = int(input("ID del estudiante\n"))
+    std_dict = "Student " + str(id)
+    name = input("Nombre del estudiante:\n")
+
+    with open('student_file.pkl', 'rb') as f:
+        student_names_loaded = pickle.load(f)
+        student_names_loaded[std_dict]['Name'] = name
+        with open('student_file.pkl', 'wb') as f:  # open a text file
+            pickle.dump(student_names_loaded, f) # serialize the list
+
+            f.close()
+
+def get_student_id() -> str:
+    id = input("ID del estudiante:\n")
+    return id
+
+def get_student_info(p_id:str):
+    with open('student_file.pkl', 'rb') as f:
+        student = "Student "+ p_id 
+        student_names_loaded = pickle.load(f) # deserialize using load()
+        print(student_names_loaded[student])
+
+def pickle_menu():
+    print("\n************** MENÚ **************")
+    print("[1] Guardar lista de estudiantes")
+    print("[2] Obtener lista de estudiantes")
+    print("[3] Agregar nuevo estudiante")
+    print("[4] Información de un estudiante")
+    print("[5] Editar información de un estudiante")
+    print("[0] Salir del programa \n")
+
+pickle_menu()
+pickle_opt = int(input("Seleccione una opción: \n"))
+
+while pickle_opt != 0:
+
+    if pickle_opt == 1:
+        save_pkl()
+    elif pickle_opt == 2:
+        load_pkl()
+    elif pickle_opt == 3:
+        add_new_student()
+    elif pickle_opt == 4:
+        id = get_student_id()
+        get_student_info(id)
+    elif pickle_opt == 5:
+        update_student()
+    else:
+        print("Opción inválida.\n")
+
+    pickle_menu()
+    pickle_opt = int(input("Seleccione una opción: \n"))
