@@ -529,4 +529,3 @@ font = ImageFont.truetype("arial.ttf", fontsize)
 print('final font size',fontsize)
 draw.text((10, 25), txt, font=font) # pu
 new_name = "LasChanas"
-p_image.save(f"{save_true}{new_name}.png")

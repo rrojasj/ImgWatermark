@@ -40,11 +40,12 @@ def sv_config_options_pkl():
     default_config = {
         'Ancho MA Img': 130,
         'Altura MA Img': 30,
-        'Tamaño MA Texto': 24,
+        'Tamaño MA Texto': 16,
         'Texto': 'ImgWatermark',
-        'Transparencia': 128,
-        'Posición X': 15,
-        'Posición Y': 15,
+        'Transp_txt': 128,
+        'Transp_img': 1.0,
+        'Posición X': 0,
+        'Posición Y': 0,
         'Auto-Ajuste': "Desactivado",
         'Repeticiones': 1,
     }
@@ -198,7 +199,7 @@ def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool)
         print(msj)
     
     draw.text((coord_x, coord_y), wm_txt, font= fnt, fill=(255,255,255,alpha))
-    txt = txt.rotate(45) 
+    # txt = txt.rotate(45)
     
     wm_image = Image.alpha_composite(image, txt)
 
@@ -251,6 +252,56 @@ def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
 
     return image
 
+def apply_auto_adj_txt(p_img_path, p_draw, p_d_text):
+    image = Image.open(p_img_path).convert("RGBA")
+    draw = ImageDraw.Draw(image)
+    txt = p_d_text
+    fontsize = 1  # starting font size
+
+    # portion of image width you want text width to be
+    img_fraction = 0.8
+
+    font = ImageFont.truetype("arial.ttf", fontsize)
+    while font.getsize(txt)[0] < img_fraction*image.size[0]:
+        # iterate until the text size is just larger than the criteria
+        fontsize += 1
+        font = ImageFont.truetype("arial.ttf", fontsize)
+
+    # optionally de-increment to be sure it is less than criteria
+    fontsize -= 1
+    adjusted_font = ImageFont.truetype("arial.ttf", fontsize)
+
+    return adjusted_font
+
+def apply_auto_adj_img(p_source_img:Image,p_alpha:float,box:tuple=(0,0)) -> Image:
+    """
+    function: apply_auto_adj_img()
+    description: Aplicar el auto ajuste para una marca de agua como imagen
+    params: p_source_img, p_alpha, p_pos_x, p_pos_y
+    """
+    wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
+    img_fraction = 0.8
+
+    wm_width, wm_heigth = wm_img.size
+    # src_width, src_heigth = p_source_img.size
+
+    while wm_width < img_fraction*p_source_img.size[0]:
+        wm_width += 1
+        wm_heigth += 1
+    
+    wm_width -= 1
+    wm_heigth -= 50
+    wm_adjusted = wm_img.resize((wm_width, wm_heigth))
+
+    # Agrega transparencia a la imagen marca de agua
+    wm_img_trans = Image.new("RGBA",wm_adjusted.size)
+    wm_img_trans = Image.blend(wm_img_trans,wm_adjusted,p_alpha)
+
+    # Se une la imagen marca de agua con la imagen origen
+    p_source_img.paste(wm_img_trans,box,wm_img_trans)
+
+    return p_source_img
+
 def apply_wm_txt_default(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     """
     function: wm_text()
@@ -260,29 +311,34 @@ def apply_wm_txt_default(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     # Obtener el diccionario con los valores de configuración por defecto
     config_dict = get_config_options_dict()
 
+    # Guardar los valores del diccionario en variables para mejor comprensión
     d_size = config_dict['Tamaño MA Texto']
     d_text = config_dict['Texto']
-    d_transp = config_dict['Transparencia']
+    d_transp = config_dict['Transp_txt']
     d_pos_x = config_dict['Posición X']
     d_pos_y = config_dict['Posición Y']
-    # d_auto_adj = config_dict['Auto-Ajuste']
+    d_auto_adj = config_dict['Auto-Ajuste']
     d_reps = config_dict['Repeticiones']
-    
     
     full_path = p_file_path+p_img_name
     image = Image.open(full_path).convert("RGBA")
-    orig_width, orig_height = image.size
+    img_width, img_height = image.size
 
     txt = Image.new('RGBA', image.size, (255,255,255,0))
 
     # Obtener el tipo de fuente y tamaño
-    fnt = ImageFont.truetype('arial.ttf', d_size)
+    # fnt = ImageFont.truetype('arial.ttf', d_size)
+
     # get a drawing context
     draw = ImageDraw.Draw(txt)
-    wm_txt = d_text
+
+    # Tamaño depende de si el Auto-Ajuste se encuentra "Activado" o "Desactivado"
+    if d_auto_adj == "Activado":
+        fnt = apply_auto_adj_txt(full_path, draw, d_text)
+    else:
+        fnt = ImageFont.truetype('arial.ttf', d_size)
     
-    draw.text((d_pos_x, d_pos_y), wm_txt, font= fnt, fill=(255,255,255,d_transp))
-    txt = txt.rotate(45)
+    draw.text((d_pos_x, d_pos_y), d_text, font= fnt, fill=(255,255,255,d_transp))
     
     wm_image = Image.alpha_composite(image, txt)
 
@@ -317,10 +373,21 @@ def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int, p_sev_imgs
 
     source_img = Image.open(p_file_path+p_img_name)
     if default_option == 1:
-        image = trans_paste(source_img,1.0,(15,15))
+        config_dict = get_config_options_dict()
+        transparency = config_dict['Transp_img']
+        x = config_dict['Posición X']
+        y = config_dict['Posición Y']
+        auto_adj = config_dict['Auto-Ajuste']
+
+        if auto_adj == "Activado":
+            image = apply_auto_adj_img(source_img, transparency, (x,y))
+        else:
+            image = trans_paste(source_img,transparency,(x,y))
     else:
         new_alpha = float(input("Ingrese la nueva escala de opacidad de la marca de agua:\n- Valores entre: 0.1 y 1.0\n"))
-        image = trans_paste(source_img,new_alpha,(15,15))
+        input_x = int(input("Nueva posición de la marca en el eje 'x': "))
+        input_y = int(input("Nueva posición de la marca en el eje 'y': "))
+        image = trans_paste(source_img,new_alpha,(input_x,input_y))
 
     # No es requerido mostrar la imagen - Deshabilitar
     # wm_image.show()
@@ -330,7 +397,7 @@ def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int, p_sev_imgs
 
     return image
 
-def add_watermark(p_file_name:str, p_file_path:str, p_wm_data_dict:dict, p_sev_imgs:bool):
+def add_watermark(p_file_name:str, p_file_path:str, p_sev_imgs:bool):
     """
     function: add_wm_image()
     description: Agrega una marca de agua a la imagen indicada por el usuario
@@ -338,28 +405,28 @@ def add_watermark(p_file_name:str, p_file_path:str, p_wm_data_dict:dict, p_sev_i
     """
     file_path = p_file_path
     img_name = p_file_name
-
-    for image in os.listdir(file_path):
-        
-        if image == img_name:
+    try:
+        for image in os.listdir(file_path):
             
-            if p_wm_data_dict['type'] == 1:
-
-                if p_wm_data_dict['df_option'] == 1:
-                    # wm_image = apply_wm_txt(file_path, img_name, p_sev_imgs)
-                    wm_image = apply_wm_txt_default(file_path, img_name, p_sev_imgs)
-                else:
-                    wm_image = apply_wm_txt_config_values(file_path, img_name, p_sev_imgs)
+            if image == img_name:
                 
-                break
-            else:
-                wm_image = apply_wm_img(file_path, img_name, p_wm_data_dict['df_option'], p_sev_imgs)
-                break
-    else:
-        print("\n La imagen no se encuentra en el directorio.")
-        time.sleep(4)
+                wm_data_dict = get_wm_data()
 
-    return wm_image
+                if wm_data_dict['type'] == 1:
+
+                    if wm_data_dict['df_option'] == 1:
+                        # wm_image = apply_wm_txt(file_path, img_name, p_sev_imgs)
+                        wm_image = apply_wm_txt_default(file_path, img_name, p_sev_imgs)
+                    else:
+                        wm_image = apply_wm_txt_config_values(file_path, img_name, p_sev_imgs)
+                    
+                    break
+                else:
+                    wm_image = apply_wm_img(file_path, img_name, wm_data_dict['df_option'], p_sev_imgs)
+                    break
+        return wm_image
+    except:
+        print("\nAn exception occurred:")
 
 def validate_file(p_full_path:str) -> bool:
     """
@@ -452,9 +519,18 @@ def exec_config_option(p_config_option:int) -> str:
             break
 
         elif p_config_option == 3:
-            text_key = "Transparencia"
-            transp = int(input("Ingrese el nuevo grado de transparencia de la marca de agua:\n"))
-            ed_config_options_pkl(text_key, transp)
+            transp_wm_type = int(input("Seleccione el tipo de MA: \n1. Texto\n2. Imagen\n"))
+
+            if transp_wm_type == 1:
+                text_key = "Transp_txt"
+                transp_value = int(input("Ingrese el nuevo grado de transparencia de la marca de agua:\nValor entre 0 y 255"))
+                ed_config_options_pkl(text_key, transp_value)
+                
+            else:
+                text_key = "Transp_img"
+                transp_value = float(input("Ingrese el nuevo grado de transparencia:\nValor entre 0.0 y 1.0\n"))
+                ed_config_options_pkl(text_key, transp_value)
+                
             break
 
         elif p_config_option == 4:
