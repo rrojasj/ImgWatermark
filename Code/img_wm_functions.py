@@ -169,8 +169,6 @@ def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool)
     description: Pinta el la marca de agua como texto usando valores ingresados por el usuario
     params: p_file_path, p_img_name
     """
-    # Crear un objeto imagen desde la imagen original
-    # Se almacena en la variable 'image'
     full_path = p_file_path+p_img_name
     image = Image.open(full_path).convert("RGBA")
     orig_width, orig_height = image.size
@@ -203,12 +201,11 @@ def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool)
     txt = txt.rotate(45) 
     
     wm_image = Image.alpha_composite(image, txt)
-    # wm_image.show
 
     # Salvar la información
-    save_one_img(p_sev_imgs, image)
+    save_one_img(p_sev_imgs, wm_image)
 
-    return image
+    return wm_image
 
 def apply_wm_txt2(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     """
