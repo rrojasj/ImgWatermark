@@ -207,53 +207,6 @@ def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool)
 
     return wm_image
 
-def apply_wm_txt2(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
-    """
-    function: wm_text()
-    description: Agrega una marca de agua a la imagen indicada por el usuario
-    params: p_image
-    """
-    # Obtener el diccionario con los valores de configuración por defecto
-    config_dict = get_config_options_dict()
-    d_size = config_dict['Tamaño']
-    d_text = config_dict['Texto']
-    d_transp = config_dict['Transparencia']
-    d_pos_x = config_dict['Posición X']
-    d_pos_y = config_dict['Posición Y']
-    # d_auto_adj = config_dict['Auto-Ajuste']
-    # d_reps = config_dict['Repeticiones']
-
-    txt = Image.new('RGBA', image.size, (255,255,255,0))
-    
-    # Crear un objeto imagen desde la imagen original
-    # Se almacena en la variable 'image'
-    full_path = p_file_path+p_img_name
-    image = Image.open(full_path)
-    width, height = image.size
-
-    # Texto a pintar en el objeto imagen que se creó
-    draw = ImageDraw.Draw(image)
-    text = d_text
-
-    font = ImageFont.truetype('arial.ttf', d_size)
-
-    draw = ImageDraw.Draw(txt)
-    text_width, text_height = draw.textsize(text, font)
-
-    # calculate the x,y coordinates of the text
-    margin = 10
-    x = (width/text_width)+margin # width - text_width - margin
-    y = height/text_height # height - text_height - margin
-
-    # Pintar la marca de agua en la esquina superior izquierda 
-    new_watermark = draw.text((d_pos_x,d_pos_y), text, font=font)
-    # image.show()
-
-    # Salvar la información
-    save_one_img(p_sev_imgs, image)
-
-    return image
-
 def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     """
     function: wm_text()
@@ -270,14 +223,57 @@ def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     d_pos_y = config_dict['Posición Y']
     # d_auto_adj = config_dict['Auto-Ajuste']
     d_reps = config_dict['Repeticiones']
+    
     # Crear un objeto imagen desde la imagen original
     # Se almacena en la variable 'image'
+    full_path = p_file_path+p_img_name
+    image = Image.open(full_path)
+    width, height = image.size
 
+    # Texto a pintar en el objeto imagen que se creó
+    draw = ImageDraw.Draw(image)
+    text = "ImgWatermark"
+
+    font = ImageFont.truetype('arial.ttf', 24)
+    text_width, text_height = draw.textsize(text, font)
+
+    # calculate the x,y coordinates of the text
+    margin = 10
+    x = (width/text_width)+margin # width - text_width - margin
+    y = height/text_height # height - text_height - margin
+
+    # Pintar la marca de agua en la esquina superior izquierda 
+    new_watermark = draw.text((x,y), text, font=font)
+    # image.show()
+
+    # Salvar la información
+    save_one_img(p_sev_imgs, image)
+
+    return image
+
+def apply_wm_txt_default(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
+    """
+    function: wm_text()
+    description: Agrega una marca de agua a la imagen indicada por el usuario (Valores guardados en pickle)
+    params: p_file_path, p_img_name, p_sev_imgs
+    """
+    # Obtener el diccionario con los valores de configuración por defecto
+    config_dict = get_config_options_dict()
+
+    d_size = config_dict['Tamaño MA Texto']
+    d_text = config_dict['Texto']
+    d_transp = config_dict['Transparencia']
+    d_pos_x = config_dict['Posición X']
+    d_pos_y = config_dict['Posición Y']
+    # d_auto_adj = config_dict['Auto-Ajuste']
+    d_reps = config_dict['Repeticiones']
+    
+    
     full_path = p_file_path+p_img_name
     image = Image.open(full_path).convert("RGBA")
     orig_width, orig_height = image.size
 
-    txt = Image.new('RGBA', image.size, (255,255,255,d_transp))
+    txt = Image.new('RGBA', image.size, (255,255,255,0))
 
     # Obtener el tipo de fuente y tamaño
     fnt = ImageFont.truetype('arial.ttf', d_size)
@@ -285,16 +281,15 @@ def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     draw = ImageDraw.Draw(txt)
     wm_txt = d_text
     
-    for k in range(d_reps):
-        draw.text(((d_pos_x*k+1), (d_pos_y*k+1)), wm_txt, font= fnt, fill=(255,255,255,d_transp))
-        txt = txt.rotate(45)
-        wm_image = Image.alpha_composite(image, txt)
-        # wm_image.show
+    draw.text((d_pos_x, d_pos_y), wm_txt, font= fnt, fill=(255,255,255,d_transp))
+    txt = txt.rotate(45)
+    
+    wm_image = Image.alpha_composite(image, txt)
 
     # Salvar la información
-    save_one_img(p_sev_imgs, image)
+    save_one_img(p_sev_imgs, wm_image)
 
-    return image
+    return wm_image
 
 def trans_paste(p_source_img:Image,p_alpha:float,box:tuple=(0,0)) -> Image:
     """
@@ -351,7 +346,8 @@ def add_watermark(p_file_name:str, p_file_path:str, p_wm_data_dict:dict, p_sev_i
             if p_wm_data_dict['type'] == 1:
 
                 if p_wm_data_dict['df_option'] == 1:
-                    wm_image = apply_wm_txt(file_path, img_name, p_sev_imgs)
+                    # wm_image = apply_wm_txt(file_path, img_name, p_sev_imgs)
+                    wm_image = apply_wm_txt_default(file_path, img_name, p_sev_imgs)
                 else:
                     wm_image = apply_wm_txt_config_values(file_path, img_name, p_sev_imgs)
                 

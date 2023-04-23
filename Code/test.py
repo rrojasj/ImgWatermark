@@ -402,100 +402,131 @@
 
 # print(wm_data_dict['type'])
 
-import pickle
+# *********************************************************************************** #
+# *********************************************************************************** #
 
-def save_pkl():
+# import pickle
 
-    students = {
-        'Student 1': {
-            'ID': "1", 'Name': "Alice", 'Age' :10, 'Grade':4,
-        },
-        'Student 2': {
-            'ID': "2", 'Name':'Bob', 'Age':11, 'Grade':5
-        },
-        'Student 3': {
-            'ID': "3", 'Name':'Elena', 'Age':14, 'Grade':8
-        }
-    }
+# def save_pkl():
 
-    with open('student_file.pkl', 'wb') as f:  # open a text file
-        pickle.dump(students, f) # serialize the list
+#     students = {
+#         'Student 1': {
+#             'ID': "1", 'Name': "Alice", 'Age' :10, 'Grade':4,
+#         },
+#         'Student 2': {
+#             'ID': "2", 'Name':'Bob', 'Age':11, 'Grade':5
+#         },
+#         'Student 3': {
+#             'ID': "3", 'Name':'Elena', 'Age':14, 'Grade':8
+#         }
+#     }
 
-    f.close()
+#     with open('student_file.pkl', 'wb') as f:  # open a text file
+#         pickle.dump(students, f) # serialize the list
 
-def load_pkl():
+#     f.close()
 
-    with open('student_file.pkl', 'rb') as f:
+# def load_pkl():
 
-        student_names_loaded = pickle.load(f) # deserialize using load()
-        print(student_names_loaded) # print student names
-        print(type(student_names_loaded))
+#     with open('student_file.pkl', 'rb') as f:
 
-def add_new_student():
-    id = int(input("ID del estudiante\n"))
-    std_dict = "Student " + str(id)
-    name = input("Nombre del estudiante:\n")
-    age = int(input("Edad del estudiante:\n"))
-    grade = int(input("Grado del estudiante:\n"))
+#         student_names_loaded = pickle.load(f) # deserialize using load()
+#         print(student_names_loaded) # print student names
+#         print(type(student_names_loaded))
 
-    with open('student_file.pkl', 'rb') as f:
-        student_names_loaded = pickle.load(f)
-        student_names_loaded[std_dict] = {'ID': str(id), 'Name':name, 'Age':age, 'Grade':grade}
-        with open('student_file.pkl', 'wb') as f:  # open a text file
-            pickle.dump(student_names_loaded, f) # serialize the list
+# def add_new_student():
+#     id = int(input("ID del estudiante\n"))
+#     std_dict = "Student " + str(id)
+#     name = input("Nombre del estudiante:\n")
+#     age = int(input("Edad del estudiante:\n"))
+#     grade = int(input("Grado del estudiante:\n"))
 
-            f.close()
+#     with open('student_file.pkl', 'rb') as f:
+#         student_names_loaded = pickle.load(f)
+#         student_names_loaded[std_dict] = {'ID': str(id), 'Name':name, 'Age':age, 'Grade':grade}
+#         with open('student_file.pkl', 'wb') as f:  # open a text file
+#             pickle.dump(student_names_loaded, f) # serialize the list
 
-def update_student():
-    id = int(input("ID del estudiante\n"))
-    std_dict = "Student " + str(id)
-    name = input("Nombre del estudiante:\n")
+#             f.close()
 
-    with open('student_file.pkl', 'rb') as f:
-        student_names_loaded = pickle.load(f)
-        student_names_loaded[std_dict]['Name'] = name
-        with open('student_file.pkl', 'wb') as f:  # open a text file
-            pickle.dump(student_names_loaded, f) # serialize the list
+# def update_student():
+#     id = int(input("ID del estudiante\n"))
+#     std_dict = "Student " + str(id)
+#     name = input("Nombre del estudiante:\n")
 
-            f.close()
+#     with open('student_file.pkl', 'rb') as f:
+#         student_names_loaded = pickle.load(f)
+#         student_names_loaded[std_dict]['Name'] = name
+#         with open('student_file.pkl', 'wb') as f:  # open a text file
+#             pickle.dump(student_names_loaded, f) # serialize the list
 
-def get_student_id() -> str:
-    id = input("ID del estudiante:\n")
-    return id
+#             f.close()
 
-def get_student_info(p_id:str):
-    with open('student_file.pkl', 'rb') as f:
-        student = "Student "+ p_id 
-        student_names_loaded = pickle.load(f) # deserialize using load()
-        print(student_names_loaded[student])
+# def get_student_id() -> str:
+#     id = input("ID del estudiante:\n")
+#     return id
 
-def pickle_menu():
-    print("\n************** MENÚ **************")
-    print("[1] Guardar lista de estudiantes")
-    print("[2] Obtener lista de estudiantes")
-    print("[3] Agregar nuevo estudiante")
-    print("[4] Información de un estudiante")
-    print("[5] Editar información de un estudiante")
-    print("[0] Salir del programa \n")
+# def get_student_info(p_id:str):
+#     with open('student_file.pkl', 'rb') as f:
+#         student = "Student "+ p_id 
+#         student_names_loaded = pickle.load(f) # deserialize using load()
+#         print(student_names_loaded[student])
 
-pickle_menu()
-pickle_opt = int(input("Seleccione una opción: \n"))
+# def pickle_menu():
+#     print("\n************** MENÚ **************")
+#     print("[1] Guardar lista de estudiantes")
+#     print("[2] Obtener lista de estudiantes")
+#     print("[3] Agregar nuevo estudiante")
+#     print("[4] Información de un estudiante")
+#     print("[5] Editar información de un estudiante")
+#     print("[0] Salir del programa \n")
 
-while pickle_opt != 0:
+# pickle_menu()
+# pickle_opt = int(input("Seleccione una opción: \n"))
 
-    if pickle_opt == 1:
-        save_pkl()
-    elif pickle_opt == 2:
-        load_pkl()
-    elif pickle_opt == 3:
-        add_new_student()
-    elif pickle_opt == 4:
-        id = get_student_id()
-        get_student_info(id)
-    elif pickle_opt == 5:
-        update_student()
-    else:
-        print("Opción inválida.\n")
+# while pickle_opt != 0:
 
-    pickle_menu()
-    pickle_opt = int(input("Seleccione una opción: \n"))
+#     if pickle_opt == 1:
+#         save_pkl()
+#     elif pickle_opt == 2:
+#         load_pkl()
+#     elif pickle_opt == 3:
+#         add_new_student()
+#     elif pickle_opt == 4:
+#         id = get_student_id()
+#         get_student_info(id)
+#     elif pickle_opt == 5:
+#         update_student()
+#     else:
+#         print("Opción inválida.\n")
+
+#     pickle_menu()
+#     pickle_opt = int(input("Seleccione una opción: \n"))
+
+# *********************************************************************************** #
+# *********************************************************************************** #
+
+from PIL import ImageFont, ImageDraw, Image
+
+image = Image.open('C:/ImgWatermark/Documents/hacking_1.png')
+draw = ImageDraw.Draw(image)
+txt = "Hello World"
+fontsize = 12  # starting font size
+
+# portion of image width you want text width to be
+img_fraction = 0.50
+
+font = ImageFont.truetype("arial.ttf", fontsize)
+while font.getsize(txt)[0] < img_fraction*image.size[0]:
+    # iterate until the text size is just larger than the criteria
+    fontsize += 1
+    font = ImageFont.truetype("arial.ttf", fontsize)
+
+# optionally de-increment to be sure it is less than criteria
+fontsize -= 1
+font = ImageFont.truetype("arial.ttf", fontsize)
+
+print('final font size',fontsize)
+draw.text((10, 25), txt, font=font) # pu
+new_name = "LasChanas"
+p_image.save(f"{save_true}{new_name}.png")
