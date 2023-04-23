@@ -38,8 +38,9 @@ def sv_config_options_pkl():
     params: None
     """
     default_config = {
-        'Ancho': 130,
-        'Altura': 30,
+        'Ancho MA Img': 130,
+        'Altura MA Img': 30,
+        'Tamaño MA Texto': 24,
         'Texto': 'ImgWatermark',
         'Transparencia': 128,
         'Posición X': 15,
@@ -66,7 +67,7 @@ def ld_config_options_pkl():
         for key, value in config_options_loaded.items():
             print('- ',key, ': ', value)
 
-def ed_config_options_pkl(p_config_key:str, p_config_value:str):
+def ed_config_options_pkl(p_config_key:str, p_config_value):
     """
     function: ed_config_options_pkl()
     description: Actualiza los valores por defecto y los guarda en el archivo pickle
@@ -82,6 +83,12 @@ def ed_config_options_pkl(p_config_key:str, p_config_value:str):
             pickle.dump(config_options_loaded, f) # serialize the list
 
             f.close()
+
+def get_config_options_dict() -> dict:
+    configs_dict = {}
+    with open('default_config.pkl', 'rb') as f:
+        configs_dict = pickle.load(f)
+    return configs_dict
 
 def main_menu():
     print("\n************** MENÚ DE OPCIONES **************")
@@ -203,12 +210,24 @@ def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool)
 
     return image
 
-def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
+def apply_wm_txt2(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     """
     function: wm_text()
     description: Agrega una marca de agua a la imagen indicada por el usuario
     params: p_image
     """
+    # Obtener el diccionario con los valores de configuración por defecto
+    config_dict = get_config_options_dict()
+    d_size = config_dict['Tamaño']
+    d_text = config_dict['Texto']
+    d_transp = config_dict['Transparencia']
+    d_pos_x = config_dict['Posición X']
+    d_pos_y = config_dict['Posición Y']
+    # d_auto_adj = config_dict['Auto-Ajuste']
+    # d_reps = config_dict['Repeticiones']
+
+    txt = Image.new('RGBA', image.size, (255,255,255,0))
+    
     # Crear un objeto imagen desde la imagen original
     # Se almacena en la variable 'image'
     full_path = p_file_path+p_img_name
@@ -217,9 +236,11 @@ def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
 
     # Texto a pintar en el objeto imagen que se creó
     draw = ImageDraw.Draw(image)
-    text = "ImgWatermark"
+    text = d_text
 
-    font = ImageFont.truetype('arial.ttf', 24)
+    font = ImageFont.truetype('arial.ttf', d_size)
+
+    draw = ImageDraw.Draw(txt)
     text_width, text_height = draw.textsize(text, font)
 
     # calculate the x,y coordinates of the text
@@ -228,8 +249,50 @@ def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     y = height/text_height # height - text_height - margin
 
     # Pintar la marca de agua en la esquina superior izquierda 
-    new_watermark = draw.text((x,y), text, font=font)
+    new_watermark = draw.text((d_pos_x,d_pos_y), text, font=font)
     # image.show()
+
+    # Salvar la información
+    save_one_img(p_sev_imgs, image)
+
+    return image
+
+def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
+    """
+    function: wm_text()
+    description: Agrega una marca de agua a la imagen indicada por el usuario
+    params: p_image
+    """
+    # Obtener el diccionario con los valores de configuración por defecto
+    config_dict = get_config_options_dict()
+
+    d_size = config_dict['Tamaño MA Texto']
+    d_text = config_dict['Texto']
+    d_transp = config_dict['Transparencia']
+    d_pos_x = config_dict['Posición X']
+    d_pos_y = config_dict['Posición Y']
+    # d_auto_adj = config_dict['Auto-Ajuste']
+    d_reps = config_dict['Repeticiones']
+    # Crear un objeto imagen desde la imagen original
+    # Se almacena en la variable 'image'
+
+    full_path = p_file_path+p_img_name
+    image = Image.open(full_path).convert("RGBA")
+    orig_width, orig_height = image.size
+
+    txt = Image.new('RGBA', image.size, (255,255,255,d_transp))
+
+    # Obtener el tipo de fuente y tamaño
+    fnt = ImageFont.truetype('arial.ttf', d_size)
+    # get a drawing context
+    draw = ImageDraw.Draw(txt)
+    wm_txt = d_text
+    
+    for k in range(d_reps):
+        draw.text(((d_pos_x*k+1), (d_pos_y*k+1)), wm_txt, font= fnt, fill=(255,255,255,d_transp))
+        txt = txt.rotate(45)
+        wm_image = Image.alpha_composite(image, txt)
+        # wm_image.show
 
     # Salvar la información
     save_one_img(p_sev_imgs, image)
@@ -371,14 +434,23 @@ def exec_config_option(p_config_option:int) -> str:
     while p_config_option != 0:
 
         if p_config_option == 1:
-            w_key = "Ancho"
-            width = input("Ingrese el nuevo ancho de la marca de agua:\n")
-            ed_config_options_pkl(w_key, width)
-            
-            h_key = "Altura"
-            height = input("Ingrese la nueva altura de la marca de agua:\n")
-            ed_config_options_pkl(h_key, height)
-            break
+
+            config_size_type = int(input("Tipo de Marca de agua para configurar el tamaño: 1. Texto 2. Imagen\n"))
+
+            if config_size_type == 1:
+                fnt_size_key = "Tamaño MA Texto"
+                fnt_size = int(input("Ingrese el nuevo tamaño de la marca de agua como texto:\n"))
+                ed_config_options_pkl(fnt_size_key, fnt_size)
+                break
+            else:
+                w_key = "Ancho MA Img"
+                width = int(input("Ingrese el nuevo ancho de la marca de agua como imagen:\n"))
+                ed_config_options_pkl(w_key, width)
+                
+                h_key = "Altura MA Img"
+                height = int(input("Ingrese la nueva altura de la marca de agua como imagen:\n"))
+                ed_config_options_pkl(h_key, height)
+                break
             
         elif p_config_option == 2:
             text_key = "Texto"
@@ -388,18 +460,18 @@ def exec_config_option(p_config_option:int) -> str:
 
         elif p_config_option == 3:
             text_key = "Transparencia"
-            opacity = input("Ingrese el nuevo grado de transparencia de la marca de agua:\n")
-            ed_config_options_pkl(text_key, opacity)
+            transp = int(input("Ingrese el nuevo grado de transparencia de la marca de agua:\n"))
+            ed_config_options_pkl(text_key, transp)
             break
 
         elif p_config_option == 4:
             x_key = "Posición X"
-            x_pos = input("Ingrese la nueva posición en el eje 'x' de la marca de agua:\n")
+            x_pos = int(input("Ingrese la nueva posición en el eje 'x' de la marca de agua:\n"))
             ed_config_options_pkl(x_key, x_pos)
             
             
             y_key = "Posición Y"
-            y_pos = input("Ingrese la nueva posición en el eje 'y' de la marca de agua:\n")
+            y_pos = int(input("Ingrese la nueva posición en el eje 'y' de la marca de agua:\n"))
             ed_config_options_pkl(y_key, y_pos)
             break
 
@@ -427,22 +499,20 @@ def exec_config_option(p_config_option:int) -> str:
                     activate_auto_adj = "Activado"
                     ed_config_options_pkl(auto_adj_key, activate_auto_adj)
                 else:
-                    print("Sigue con Auto-Ajuste desactivado")
-            
+                    print("Sigue con Auto-Ajuste desactivado") 
             break
 
         elif p_config_option == 6:
             text_key = "Repeticiones"
-            repetitions = input("Ingrese la nueva cantidad de repeticiones:\n")
+            repetitions = int(input("Ingrese la nueva cantidad de repeticiones:\n"))
             ed_config_options_pkl(text_key, repetitions)
             break
 
         else:
             msg = "Opción inválida. Seleccione nuevamente.\n"
             print(msg)
-            break
-
-    config_menu()
-    config_option = int(input("Seleccione una opción: \n"))
-    exec_config_option(config_option)
+            
+        config_menu()
+        config_option = int(input("Seleccione una opción: \n"))
+        exec_config_option(config_option)
         
