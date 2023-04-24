@@ -536,6 +536,7 @@
 from PIL import Image
 
 def create_watermark(image_path, final_image_path, watermark, hires=False):
+    import random
     main = Image.open(image_path)
     mark = Image.open(watermark)
     mark = mark.rotate(30, expand=1)
@@ -547,9 +548,13 @@ def create_watermark(image_path, final_image_path, watermark, hires=False):
     new_mark_width = main_width * 0.4
     mark.thumbnail((new_mark_width, new_mark_width / aspect_ratio), Image.LANCZOS)
     tmp_img = Image.new('RGBA', main.size)
-    for i in range(0, tmp_img.size[0], mark.size[0]):
-        for j in range(0, tmp_img.size[1], mark.size[1]):
-            main.paste(mark, (i, j), mark)
+    # for i in range(0, tmp_img.size[0], mark.size[0]):
+    #     for j in range(0, tmp_img.size[1], mark.size[1]):
+    #         main.paste(mark, (i, j), mark)
+    for i in range(7):
+        x=random.randint(0, main_width-300)
+        # y+=random.randrange(0,int(main_width/8), 19)+random.randint(0,100)
+        main.paste(mark, i, mark)
     if not hires:
         main.thumbnail((758, 1000), Image.LANCZOS)
         main.save(final_image_path, 'PNG', quality=75)
@@ -559,3 +564,7 @@ def create_watermark(image_path, final_image_path, watermark, hires=False):
 
 if __name__ == '__main__':
     create_watermark('C:/ImgWatermark/Documents/hacking_1.png', 'C:/ImgWatermark/Saved/testing.png', r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png", True)
+
+# *********************************************************************************** #
+# *********************************************************************************** #
+

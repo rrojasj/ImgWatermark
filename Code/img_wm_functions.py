@@ -21,11 +21,12 @@ def sv_config_options_pkl():
         'Texto': 'ImgWatermark',
         'Transp_txt': 128,
         'Transp_img': 1.0,
-        'Posición X': 0,
-        'Posición Y': 0,
+        'Posicion X': 0,
+        'Posicion Y': 0,
         'Auto-Ajuste': "Desactivado",
-        'Repetir-Auto': "Desactivado",
-        'Repetir-Cant': 1
+        'Repeticion-Tipo': "Automatico",
+        'Repeticion-Activo': "Desactivado",
+        'Repeticion-Cant': 2
     }
 
     with open('default_config.pkl', 'wb') as f:  # open a text file
@@ -79,13 +80,15 @@ def main_menu():
 
 def config_menu():
     ld_config_options_pkl()
-    print("\n************** MENÚ DE CONFIGURACIONES **************")
-    print("[1] Configuración de Tamaño de marcas de agua")
-    print("[2] Configuración de Texto de agua a la imagen")
-    print("[3] Configuración de Opacidad de marcas de agua")
-    print("[4] Configuración de Ubicación de marcas de agua")
-    print("[5] Configuración de Auto ajuste de marcas de agua a la imagen")
-    print("[6] Configuración de Cantidad de repeticiones de marcas de agua")
+    print("\n************** MENÚ DE CONFIGURACIONES DE MARCAS DE AGUA **************")
+    print("[1] Configuración de Tamaño")
+    print("[2] Configuración de Texto")
+    print("[3] Configuración de Opacidad")
+    print("[4] Configuración de Ubicación")
+    print("[5] Configuración de Auto ajuste")
+    print("[6] Configuración de tipo de repeticiones")
+    print("[7] Configuración de Cantidad de repeticiones")
+    print("[8] Configuración de activación de repeticiones")
     print("[0] Salir de configuraciones \n") 
 
 def verify_dir(p_file_path:str):
@@ -129,7 +132,7 @@ def verify_save_dir() -> str:
     else:
         print("\nLa ruta del directorio ingresada no existe.\nIntente nuevamente, gracias.")
 
-def save_one_img(p_sev_imgs:bool, p_image:Image):
+def save_one_img(p_sev_imgs:bool, p_image):
     """
     function: save_options()
     description: Verifica la ruta de guardado, la cantidad de imágenes y selecciona el proceso correcto y retorna el mensaje correspondiente
@@ -141,6 +144,61 @@ def save_one_img(p_sev_imgs:bool, p_image:Image):
         p_image.save(f"{save_true}{new_name}.png")
         print(f"\nImagen guardada en la ruta destinada: {save_true}")
         print("\nGracias por utilizar ImageWatermark Tool.\n")
+
+def apply_wm_auto_reps_img(image_path, watermark, hires=False):
+    main = Image.open(image_path)
+    mark = Image.open(watermark)
+    mark = mark.rotate(30, expand=1)
+    mask = mark.convert('L').point(lambda x: min(x, 25))
+    mark.putalpha(mask)
+    mark_width, mark_height = mark.size
+    main_width, main_height = main.size
+    aspect_ratio = mark_width / mark_height
+    new_mark_width = main_width * 0.4
+    mark.thumbnail((new_mark_width, new_mark_width / aspect_ratio), Image.LANCZOS)
+    tmp_img = Image.new('RGBA', main.size)
+    for i in range(0, tmp_img.size[0], mark.size[0]):
+        for j in range(0, tmp_img.size[1], mark.size[1]):
+            main.paste(mark, (i, j), mark)
+    if not hires:
+        main.thumbnail((758, 1000), Image.LANCZOS)
+        # main.save(final_image_path, 'PNG', quality=75)
+    else:
+        main.thumbnail((2048, 2048), Image.LANCZOS)
+        # main.save(final_image_path, 'PNG', quality=85)
+    return main
+
+
+def apply_wm_qty_reps_img(image_path, watermark, hires=False):
+    import random
+    main = Image.open(image_path)
+    mark = Image.open(watermark)
+    mark = mark.rotate(30, expand=1)
+    mask = mark.convert('L').point(lambda x: min(x, 25))
+    mark.putalpha(mask)
+    mark_width, mark_height = mark.size
+    main_width, main_height = main.size
+    aspect_ratio = mark_width / mark_height
+    new_mark_width = main_width * 0.4
+    mark.thumbnail((new_mark_width, new_mark_width / aspect_ratio), Image.LANCZOS)
+    tmp_img = Image.new('RGBA', main.size)
+
+    for i in range(7):
+        x=random.randint(0, mark_width-300)
+        y+=random.randrange(0,int(mark_height/8), 19)+random.randint(0,100)
+        main.paste(mark, i, mark)
+            
+    if not hires:
+        main.thumbnail((758, 1000), Image.LANCZOS)
+        # main.save(final_image_path, 'PNG', quality=75)
+    else:
+        main.thumbnail((2048, 2048), Image.LANCZOS)
+        # main.save(final_image_path, 'PNG', quality=85)
+    return main
+
+def create_wm_qty_reps():
+    print()
+
 
 def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     """
@@ -198,8 +256,8 @@ def apply_wm_txt(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     d_size = config_dict['Tamaño MA Texto']
     d_text = config_dict['Texto']
     d_transp = config_dict['Transparencia']
-    d_pos_x = config_dict['Posición X']
-    d_pos_y = config_dict['Posición Y']
+    d_pos_x = config_dict['Posicion X']
+    d_pos_y = config_dict['Posicion Y']
     # d_auto_adj = config_dict['Auto-Ajuste']
     d_reps = config_dict['Repeticiones']
     
@@ -293,8 +351,8 @@ def apply_wm_txt_default(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     d_size = config_dict['Tamaño MA Texto']
     d_text = config_dict['Texto']
     d_transp = config_dict['Transp_txt']
-    d_pos_x = config_dict['Posición X']
-    d_pos_y = config_dict['Posición Y']
+    d_pos_x = config_dict['Posicion X']
+    d_pos_y = config_dict['Posicion Y']
     d_auto_adj = config_dict['Auto-Ajuste']
     d_reps = config_dict['Repeticiones']
     
@@ -325,20 +383,31 @@ def apply_wm_txt_default(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
 
     return wm_image
 
-def trans_paste(p_source_img:Image,p_alpha:float,box:tuple=(0,0)) -> Image:
+def trans_paste(p_src_img_path, p_source_img:Image,p_alpha:float,box:tuple=(0,0)) -> Image:
     """
     function: trans_paste()
     description: Agrega una imagen con transparencia como marca de agua
     params: bg
     """
+    wm_img_path = r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png"
     wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
+    config_dict = get_config_options_dict()
 
     # Agrega transparencia a la imagen marca de agua
     wm_img_trans = Image.new("RGBA",wm_img.size)
     wm_img_trans = Image.blend(wm_img_trans,wm_img,p_alpha)
     
-    # Se une la imagen marca de agua con la imagen origen
-    p_source_img.paste(wm_img_trans,box,wm_img_trans)
+    if config_dict['Repeticion-Activo'] == "Activado":
+
+        if config_dict['Repeticion-Tipo'] == "Automatico":
+            p_source_img = apply_wm_auto_reps_img(p_src_img_path, wm_img_path, True)
+        else:
+            print("Funcionalidad aún no desarrollada, se aplicará el tipo de repetición por defecto. Gracias por comprender.")
+            time.sleep(3)
+            p_source_img = apply_wm_auto_reps_img(p_src_img_path, wm_img_path, True)
+    else:
+        # Se une la imagen marca de agua con la imagen origen
+        p_source_img.paste(wm_img_trans,box,wm_img_trans)
 
     return p_source_img
 
@@ -348,19 +417,19 @@ def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int, p_sev_imgs
     description: Agrega una marca de agua a la imagen indicada por el usuario
     params: p_file_path, p_img_name, p_option_1, p_sev_imgs
     """
-
-    source_img = Image.open(p_file_path+p_img_name)
+    src_full_path = p_file_path+p_img_name
+    source_img = Image.open(src_full_path)
     if default_option == 1:
         config_dict = get_config_options_dict()
         transparency = config_dict['Transp_img']
-        x = config_dict['Posición X']
-        y = config_dict['Posición Y']
+        x = config_dict['Posicion X']
+        y = config_dict['Posicion Y']
         auto_adj = config_dict['Auto-Ajuste']
 
         if auto_adj == "Activado":
             image = apply_auto_adj_img(source_img, transparency, (x,y))
         else:
-            image = trans_paste(source_img,transparency,(x,y))
+            image = trans_paste(src_full_path,source_img,transparency,(x,y))
     else:
         new_alpha = float(input("Ingrese la nueva escala de opacidad de la marca de agua:\n- Valores entre: 0.1 y 1.0\n"))
         input_x = int(input("Nueva posición de la marca en el eje 'x': "))
@@ -470,6 +539,25 @@ def get_wm_data() -> dict:
 
     return add_wm_data_dict
 
+def apply_config_updates(p_actual_value,p_key_name,p_value1,p_value2,p_msg1,p_msg2,p_confirm_msg1,p_confirm_msg2):
+    
+    if p_actual_value == p_value1:    
+        print(f"{p_key_name}: {p_actual_value}")
+        change_req = int(input(p_msg1))
+        if change_req == 1:
+            new_value = p_value2
+            ed_config_options_pkl(p_key_name, new_value)
+        else:
+            print(p_confirm_msg1)
+    else:
+        print(f"{p_key_name}: {p_value2}")
+        change_req = int(input(p_msg2))
+        if change_req == 1:
+            new_value = p_value1
+            ed_config_options_pkl(p_key_name, new_value)
+        else:
+            print(p_confirm_msg2)
+
 def exec_config_option(p_config_option:int) -> str:
 
     while p_config_option != 0:
@@ -515,12 +603,12 @@ def exec_config_option(p_config_option:int) -> str:
             break
 
         elif p_config_option == 4:
-            x_key = "Posición X"
+            x_key = "Posicion X"
             x_pos = int(input("Ingrese la nueva posición en el eje 'x' de la marca de agua:\n"))
             ed_config_options_pkl(x_key, x_pos)
             
             
-            y_key = "Posición Y"
+            y_key = "Posicion Y"
             y_pos = int(input("Ingrese la nueva posición en el eje 'y' de la marca de agua:\n"))
             ed_config_options_pkl(y_key, y_pos)
             break
@@ -528,59 +616,82 @@ def exec_config_option(p_config_option:int) -> str:
         elif p_config_option == 5:
 
             actual_value = ""
-            auto_adj_key = "Auto-Ajuste"
+            key_name = "Auto-Ajuste"
+            value1 = "Activado"
+            value2 = "Desactivado"
+            msg1 = f"Desea Desactivar {key_name}? 1.Si  2.No\n"
+            msg2 = f"Desea Activar {key_name}? 1.Si  2.No\n"
+            confirm_msg1 = f"Sigue con {key_name}: {value1}"
+            confirm_msg2 = f"Sigue con {key_name}: {value2}"
 
             with open('default_config.pkl', 'rb') as f:
                 config_options_loaded = pickle.load(f)
                 actual_value = config_options_loaded['Auto-Ajuste']
+
+            apply_config_updates(actual_value,key_name,value1,value2,msg1,msg2,confirm_msg1,confirm_msg2)
             
-            if actual_value == "Activado":
-                print(f"Auto-Ajuste: Activado")
-                change_req = int(input("Desea Desactivar el Auto-Ajuste? 1. Si  2. No\n"))
-                if change_req == 1:
-                    inactivate_auto_adj = "Desactivado"
-                    ed_config_options_pkl(auto_adj_key, inactivate_auto_adj)
-                else:
-                    print("Sigue con Auto-Ajuste activado")
-            else:
-                print(f"Auto-Ajuste: Desactivado")
-                change_req = int(input("Desea Activar el Auto-Ajuste? 1. Si  2. No\n"))
-                if change_req == 1:
-                    activate_auto_adj = "Activado"
-                    ed_config_options_pkl(auto_adj_key, activate_auto_adj)
-                else:
-                    print("Sigue con Auto-Ajuste desactivado") 
             break
 
         elif p_config_option == 6:
-            # text_key = "Repeticiones"
-            # repetitions = int(input("Ingrese la nueva cantidad de repeticiones:\n"))
-            # ed_config_options_pkl(text_key, repetitions)
-            # break
 
             actual_value = ""
-            auto_adj_key = "Repeticiones"
+            key_name = "Repeticion-Tipo"
+            value1 = "Automatico"
+            value2 = "Cantidad"
+            msg1 = "Desea cambiar el tipo de repetición? 1.Si  2.No\n"
+            msg2 = "Desea cambiar el tipo de repetición? 1.Si  2.No\n"
+            confirm_msg1 = f"Sigue con {key_name}: {value1}"
+            confirm_msg2 = f"Sigue con {key_name}: {value2}"
 
             with open('default_config.pkl', 'rb') as f:
                 config_options_loaded = pickle.load(f)
-                actual_value = config_options_loaded['Repeticiones']
+                actual_value = config_options_loaded['Repeticion-Tipo']
             
-            if actual_value == "Activado":
-                print(f"Auto-Ajuste: Activado")
-                change_req = int(input("Desea Desactivar el Auto-Ajuste? 1. Si  2. No\n"))
-                if change_req == 1:
-                    inactivate_auto_adj = "Desactivado"
-                    ed_config_options_pkl(auto_adj_key, inactivate_auto_adj)
-                else:
-                    print("Sigue con Auto-Ajuste activado")
-            else:
-                print(f"Auto-Ajuste: Desactivado")
-                change_req = int(input("Desea Activar el Auto-Ajuste? 1. Si  2. No\n"))
-                if change_req == 1:
-                    activate_auto_adj = "Activado"
-                    ed_config_options_pkl(auto_adj_key, activate_auto_adj)
-                else:
-                    print("Sigue con Auto-Ajuste desactivado") 
+            apply_config_updates(actual_value,key_name,value1,value2,msg1,msg2,confirm_msg1,confirm_msg2)
+            
+            break
+
+        elif p_config_option == 7:
+
+            rep_cant_key = "Repeticion-Cant"
+            cant_reps = int(input("Ingrese la nuevo cantidad de repeticiones:\n"))
+            ed_config_options_pkl(rep_cant_key, cant_reps)
+
+            break
+
+        elif p_config_option == 8:
+            
+            actual_value = ""
+            key_name = "Repeticion-Activo"
+            value1 = "Activado"
+            value2 = "Desactivado"
+            msg1 = "Desea Desactivar las repeticiones? 1.Si  2.No\n"
+            msg2 = "Desea Activar las repeticiones? 1.Si  2.No\n"
+            confirm_msg1 = f"Sigue con {key_name}: {value1}"
+            confirm_msg2 = f"Sigue con {key_name}: {value2}"
+
+            with open('default_config.pkl', 'rb') as f:
+                config_options_loaded = pickle.load(f)
+                actual_value = config_options_loaded[key_name]
+            
+            apply_config_updates(actual_value,key_name,value1,value2,msg1,msg2,confirm_msg1,confirm_msg2)
+            
+            # if actual_value == value1:
+            #     print(f"{key_name}: {actual_value}")
+            #     change_req = int(input(msg1))
+            #     if change_req == 1:
+            #         new_value = value2
+            #         ed_config_options_pkl(key_name, new_value)
+            #     else:
+            #         print(confirm_msg1)
+            # else:
+            #     print(f"{key_name}: {value2}")
+            #     change_req = int(input(msg2))
+            #     if change_req == 1:
+            #         new_value = value1
+            #         ed_config_options_pkl(key_name, new_value)
+            #     else:
+            #         print(confirm_msg2) 
             break
 
         else:
