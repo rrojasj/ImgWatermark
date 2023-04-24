@@ -354,7 +354,6 @@ def apply_wm_txt_default(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     d_pos_x = config_dict['Posicion X']
     d_pos_y = config_dict['Posicion Y']
     d_auto_adj = config_dict['Auto-Ajuste']
-    d_reps = config_dict['Repeticiones']
     
     full_path = p_file_path+p_img_name
     image = Image.open(full_path).convert("RGBA")
