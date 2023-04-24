@@ -8,29 +8,6 @@ import time
 
 import pickle
 
-def show_alert(message):
-    """
-    function: select_wm_img()
-    description: Muestra las imágenes con marca de agua guardados y solicita ingresar el nombre de la imagen que se necesita actualizar la marca de agua 
-    params: N/A
-    """
-    from tkinter import Tk, Label
-
-    #Create an instance of tkinter frame
-    win = Tk()
-
-    #Set the geometry of tkinter frame
-    win.geometry("750x270")
-
-    #Initialize a Label widget
-    Label(win, text= message,
-    font=('Helvetica 20 bold')).pack(pady=20)
-
-    #Automatically close the window after 3 seconds
-    win.after(3000,lambda:win.destroy())
-
-    win.mainloop()
-
 def sv_config_options_pkl():
     """
     function: sv_config_options_pkl()
@@ -47,7 +24,8 @@ def sv_config_options_pkl():
         'Posición X': 0,
         'Posición Y': 0,
         'Auto-Ajuste': "Desactivado",
-        'Repeticiones': 1,
+        'Repetir-Auto': "Desactivado",
+        'Repetir-Cant': 1
     }
 
     with open('default_config.pkl', 'wb') as f:  # open a text file
@@ -424,9 +402,12 @@ def add_watermark(p_file_name:str, p_file_path:str, p_sev_imgs:bool):
                 else:
                     wm_image = apply_wm_img(file_path, img_name, wm_data_dict['df_option'], p_sev_imgs)
                     break
+        else:
+            print("La imagen no se encuentra en el directorio.")
+
         return wm_image
     except:
-        print("\nAn exception occurred:")
+        print("\nHa ocurrido una excepción.")
 
 def validate_file(p_full_path:str) -> bool:
     """
@@ -572,9 +553,34 @@ def exec_config_option(p_config_option:int) -> str:
             break
 
         elif p_config_option == 6:
-            text_key = "Repeticiones"
-            repetitions = int(input("Ingrese la nueva cantidad de repeticiones:\n"))
-            ed_config_options_pkl(text_key, repetitions)
+            # text_key = "Repeticiones"
+            # repetitions = int(input("Ingrese la nueva cantidad de repeticiones:\n"))
+            # ed_config_options_pkl(text_key, repetitions)
+            # break
+
+            actual_value = ""
+            auto_adj_key = "Repeticiones"
+
+            with open('default_config.pkl', 'rb') as f:
+                config_options_loaded = pickle.load(f)
+                actual_value = config_options_loaded['Repeticiones']
+            
+            if actual_value == "Activado":
+                print(f"Auto-Ajuste: Activado")
+                change_req = int(input("Desea Desactivar el Auto-Ajuste? 1. Si  2. No\n"))
+                if change_req == 1:
+                    inactivate_auto_adj = "Desactivado"
+                    ed_config_options_pkl(auto_adj_key, inactivate_auto_adj)
+                else:
+                    print("Sigue con Auto-Ajuste activado")
+            else:
+                print(f"Auto-Ajuste: Desactivado")
+                change_req = int(input("Desea Activar el Auto-Ajuste? 1. Si  2. No\n"))
+                if change_req == 1:
+                    activate_auto_adj = "Activado"
+                    ed_config_options_pkl(auto_adj_key, activate_auto_adj)
+                else:
+                    print("Sigue con Auto-Ajuste desactivado") 
             break
 
         else:

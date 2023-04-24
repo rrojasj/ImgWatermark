@@ -506,26 +506,56 @@
 # *********************************************************************************** #
 # *********************************************************************************** #
 
-from PIL import ImageFont, ImageDraw, Image
+# from PIL import ImageFont, ImageDraw, Image
 
-image = Image.open('C:/ImgWatermark/Documents/hacking_1.png')
-draw = ImageDraw.Draw(image)
-txt = "Hello World"
-fontsize = 12  # starting font size
+# image = Image.open('C:/ImgWatermark/Documents/hacking_1.png')
+# draw = ImageDraw.Draw(image)
+# txt = "Hello World"
+# fontsize = 12  # starting font size
 
-# portion of image width you want text width to be
-img_fraction = 0.50
+# # portion of image width you want text width to be
+# img_fraction = 0.50
 
-font = ImageFont.truetype("arial.ttf", fontsize)
-while font.getsize(txt)[0] < img_fraction*image.size[0]:
-    # iterate until the text size is just larger than the criteria
-    fontsize += 1
-    font = ImageFont.truetype("arial.ttf", fontsize)
+# font = ImageFont.truetype("arial.ttf", fontsize)
+# while font.getsize(txt)[0] < img_fraction*image.size[0]:
+#     # iterate until the text size is just larger than the criteria
+#     fontsize += 1
+#     font = ImageFont.truetype("arial.ttf", fontsize)
 
-# optionally de-increment to be sure it is less than criteria
-fontsize -= 1
-font = ImageFont.truetype("arial.ttf", fontsize)
+# # optionally de-increment to be sure it is less than criteria
+# fontsize -= 1
+# font = ImageFont.truetype("arial.ttf", fontsize)
 
-print('final font size',fontsize)
-draw.text((10, 25), txt, font=font) # pu
-new_name = "LasChanas"
+# print('final font size',fontsize)
+# draw.text((10, 25), txt, font=font) # pu
+# new_name = "LasChanas"
+
+# *********************************************************************************** #
+# *********************************************************************************** #
+
+from PIL import Image
+
+def create_watermark(image_path, final_image_path, watermark, hires=False):
+    main = Image.open(image_path)
+    mark = Image.open(watermark)
+    mark = mark.rotate(30, expand=1)
+    mask = mark.convert('L').point(lambda x: min(x, 25))
+    mark.putalpha(mask)
+    mark_width, mark_height = mark.size
+    main_width, main_height = main.size
+    aspect_ratio = mark_width / mark_height
+    new_mark_width = main_width * 0.4
+    mark.thumbnail((new_mark_width, new_mark_width / aspect_ratio), Image.LANCZOS)
+    tmp_img = Image.new('RGBA', main.size)
+    for i in range(0, tmp_img.size[0], mark.size[0]):
+        for j in range(0, tmp_img.size[1], mark.size[1]):
+            main.paste(mark, (i, j), mark)
+    if not hires:
+        main.thumbnail((758, 1000), Image.LANCZOS)
+        main.save(final_image_path, 'PNG', quality=75)
+    else:
+        main.thumbnail((2048, 2048), Image.LANCZOS)
+        main.save(final_image_path, 'PNG', quality=85)
+
+if __name__ == '__main__':
+    create_watermark('C:/ImgWatermark/Documents/hacking_1.png', 'C:/ImgWatermark/Saved/testing.png', r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png", True)

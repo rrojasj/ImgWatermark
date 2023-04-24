@@ -32,7 +32,7 @@ while option_menu != 0:
         if os.path.exists(file_path):
             #alert_title = "Lista de imágenes"
             alert_message = "Cargando imágenes..."
-            show_alert(alert_message) # No está mostrando el pop-up
+            
             print("\nCargando imágenes...")
             # time.sleep(3)
             read_files(file_path)
