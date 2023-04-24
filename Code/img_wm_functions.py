@@ -522,7 +522,7 @@ def apply_wm_several_imgs(p_img_list:list, p_file_path:str, p_wm_data_dict:dict)
     i = 0
 
     while i < len(p_img_list):
-        wm_image = add_watermark(p_img_list[i], p_file_path, p_wm_data_dict, sev_imgs)
+        wm_image = add_watermark(p_img_list[i], p_file_path, sev_imgs)
         wm_image.save(f"{save_true}{new_name}_{(i+1)}.png")
         i += 1
 
