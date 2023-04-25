@@ -168,7 +168,6 @@ def apply_wm_auto_reps_img(image_path, watermark, hires=False):
         # main.save(final_image_path, 'PNG', quality=85)
     return main
 
-
 def apply_wm_qty_reps_img(image_path, watermark, hires=False):
     import random
     main = Image.open(image_path)
@@ -198,7 +197,6 @@ def apply_wm_qty_reps_img(image_path, watermark, hires=False):
 
 def create_wm_qty_reps():
     print()
-
 
 def apply_wm_txt_config_values(p_file_path:str, p_img_name:str, p_sev_imgs:bool):
     """
@@ -391,10 +389,13 @@ def trans_paste(p_src_img_path, p_source_img:Image,p_alpha:float,box:tuple=(0,0)
     wm_img_path = r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png"
     wm_img = Image.open(r"C:\ImgWatermark\WM_Logo\IW_logo_3_100x55_transparent.png")
     config_dict = get_config_options_dict()
+    wm_width = config_dict['Ancho MA Img']
+    wm_height = config_dict['Altura MA Img']
+    wm_adjusted = wm_img.resize((wm_width, wm_height))
 
     # Agrega transparencia a la imagen marca de agua
-    wm_img_trans = Image.new("RGBA",wm_img.size)
-    wm_img_trans = Image.blend(wm_img_trans,wm_img,p_alpha)
+    wm_img_trans = Image.new("RGBA",(wm_width,wm_height))
+    wm_img_trans = Image.blend(wm_img_trans,wm_adjusted,p_alpha)
     
     if config_dict['Repeticion-Activo'] == "Activado":
 
@@ -415,10 +416,11 @@ def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int, p_sev_imgs
     function: wm_image()
     description: Agrega una marca de agua a la imagen indicada por el usuario
     params: p_file_path, p_img_name, p_option_1, p_sev_imgs
+    Error: Función debe segregarse y delegar responsabilidad correcta.
     """
     src_full_path = p_file_path+p_img_name
     source_img = Image.open(src_full_path)
-    if default_option == 1:
+    if default_option == 1: #Si
         config_dict = get_config_options_dict()
         transparency = config_dict['Transp_img']
         x = config_dict['Posicion X']
@@ -430,10 +432,11 @@ def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int, p_sev_imgs
         else:
             image = trans_paste(src_full_path,source_img,transparency,(x,y))
     else:
+        # Esto debe salirse de esta función y ver donde se acomoda y como mejorar la lógica.
         new_alpha = float(input("Ingrese la nueva escala de opacidad de la marca de agua:\n- Valores entre: 0.1 y 1.0\n"))
         input_x = int(input("Nueva posición de la marca en el eje 'x': "))
         input_y = int(input("Nueva posición de la marca en el eje 'y': "))
-        image = trans_paste(source_img,new_alpha,(input_x,input_y))
+        image = trans_paste(src_full_path,source_img,new_alpha,(input_x,input_y))
 
     # No es requerido mostrar la imagen - Deshabilitar
     # wm_image.show()
@@ -443,7 +446,7 @@ def apply_wm_img(p_file_path:str, p_img_name:str, default_option:int, p_sev_imgs
 
     return image
 
-def add_watermark(p_file_name:str, p_file_path:str, p_sev_imgs:bool):
+def add_watermark(p_file_name:str, p_file_path:str,p_wm_data_dict:dict, p_sev_imgs:bool):
     """
     function: add_wm_image()
     description: Agrega una marca de agua a la imagen indicada por el usuario
@@ -455,21 +458,22 @@ def add_watermark(p_file_name:str, p_file_path:str, p_sev_imgs:bool):
         for image in os.listdir(file_path):
             
             if image == img_name:
-                
-                wm_data_dict = get_wm_data()
 
-                if wm_data_dict['type'] == 1:
+                if p_wm_data_dict['type'] == 1:
 
-                    if wm_data_dict['df_option'] == 1:
+                    if p_wm_data_dict['df_option'] == 1:
                         # wm_image = apply_wm_txt(file_path, img_name, p_sev_imgs)
                         wm_image = apply_wm_txt_default(file_path, img_name, p_sev_imgs)
                     else:
                         wm_image = apply_wm_txt_config_values(file_path, img_name, p_sev_imgs)
+                        return wm_image
                     
                     break
                 else:
-                    wm_image = apply_wm_img(file_path, img_name, wm_data_dict['df_option'], p_sev_imgs)
-                    break
+                    wm_image = apply_wm_img(file_path, img_name, p_wm_data_dict['df_option'], p_sev_imgs)
+
+                return wm_image
+            
         else:
             print("La imagen no se encuentra en el directorio.")
 
@@ -522,7 +526,7 @@ def apply_wm_several_imgs(p_img_list:list, p_file_path:str, p_wm_data_dict:dict)
     i = 0
 
     while i < len(p_img_list):
-        wm_image = add_watermark(p_img_list[i], p_file_path, sev_imgs)
+        wm_image = add_watermark(p_img_list[i], p_file_path, p_wm_data_dict, sev_imgs)
         wm_image.save(f"{save_true}{new_name}_{(i+1)}.png")
         i += 1
 
